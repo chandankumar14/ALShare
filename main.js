@@ -1,11 +1,28 @@
-const express = require('express')
-const app = express()
-const port = 3000
+const express = require("express");
+require("dotenv").config();
+const PORT_NO = process.env.PORT_NO;
+const API_URL = process.env.API_URL;
+const Router  = require("./Router/index")
+let HOST_NO = process.env.Host;
+const mongoose = require("mongoose");
+var cors = require("cors");
+const bodyParser = require("body-parser");
+let DB_CONNECTION = process.env.CONNECTION_STRING;
+const App = express();
+App.use(cors());
+App.use(bodyParser.json());
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+//************Routing Configuration is Here ************* */
+App.use(`/${API_URL}/`, Router);
+// *************DataBase connect is Here*************
+mongoose
+  .connect(DB_CONNECTION, { dbName: "ALShare" })
+  .then(
+    App.listen(PORT_NO, HOST_NO, () => {
+      console.log(`Server running at http://${HOST_NO}:${PORT_NO}/`);
+    }),
+    console.log("********DataBase is Connected successFully ***********")
+  )
+  .catch((err) => {
+    console.log(err);
+  });
