@@ -1,8 +1,7 @@
 const express = require("express")
 const Router = express.Router()
+const userController = require("../Controller/userDetails")
 
-Router.get(`/`, (req, res) => {
-    res.send('Hello World! this is first route configure')
-  });
 
-  module.exports  =  Router
+Router.get(`/userList`,userController.GetuserList);
+module.exports  =  Router
