@@ -3,7 +3,7 @@ require("dotenv").config();
 const PORT_NO = process.env.PORT_NO;
 const API_URL = process.env.API_URL;
 const Router  = require("./Router/index")
-let HOST_NO = process.env.Host;
+let HOST_NO = process.env.HOST;
 const mongoose = require("mongoose");
 var cors = require("cors");
 const bodyParser = require("body-parser");
