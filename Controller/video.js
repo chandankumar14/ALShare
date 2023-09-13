@@ -21,3 +21,17 @@ exports.PostVideoDetails = async (req, res, next) => {
      });
   }
 };
+
+exports.GetVideoDetails = async (req, res, next) => {
+  const videoDetails = await videoDetailsModel.find();
+  if (!videoDetails) {
+    res.status(404).json({
+      message: "somthing going wrong , please check ",
+    });
+  } else {
+    res.status(200).json({
+      message: "video details  posted successfully ",
+      videoDetails: videoDetails,
+     });
+  }
+};
