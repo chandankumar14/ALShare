@@ -1,7 +1,6 @@
 const express = require("express")
 const Router = express.Router()
-const userController = require("../Controller/userDetails")
+const userController = require("../Controller/video")
 
-
-Router.get(`/userList`,userController.GetuserList);
+Router.post(`/video_details`,userController.PostVideoDetails);
 module.exports  =  Router

@@ -1,22 +1,18 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
-const userDetails = new schema({
-  firstName: {
+const videoDetails = new schema({
+  title: {
     type: String,
     required: true,
   },
-  lastName: {
+  description: {
     type: String,
     required: true,
   },
-  constactNo: {
-    type: String,
-    required: true,
-  },
-  email: {
+  tags: {
     type: String,
     required: true,
   },
 });
 
-module.exports = mongoose.model("users", userDetails);
+module.exports = mongoose.model("videos", videoDetails);
