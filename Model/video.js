@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
 const videoDetails = new schema({
+
   title: {
     type: String,
     required: true,
@@ -10,7 +11,7 @@ const videoDetails = new schema({
     required: true,
   },
   tags: {
-    type: String,
+    type: Array,
     required: true,
   },
 });
