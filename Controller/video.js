@@ -10,6 +10,7 @@ exports.PostVideoDetail = async (req, res, next) => {
   const videoSource = req.body.videoSource;
   const userId = req.body.userId;
   const publish = req.body.publish;
+  const thumbnail = req.body.thumbnail
   const videoDetail = new videoDetailsModel({
     title: title,
     description: description,
@@ -19,6 +20,7 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoSource: videoSource,
     userId: userId,
     publish: publish,
+    thumbnail:thumbnail
   });
 
   videoDetail

@@ -35,6 +35,10 @@ const videoDetails = new schema({
     type:Boolean,
     required:true,
     default:false
+  },
+  thumbnail:{
+    type:String,
+    required:true
   }
 });
 
