@@ -11,7 +11,7 @@ exports.Follow = async (req, res, next) => {
   await followers
     .find({ userId: userId })
     .then((result) => {
-      if (result != undefined && result.length == 0) {
+      if (result != undefined && result.length === 0) {
         console.log("if block")
         followersPyload
           .save()

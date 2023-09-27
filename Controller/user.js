@@ -15,7 +15,10 @@ exports.userSignUp = async (req, res, next) => {
     DOB: DOB,
     password: password,
   });
-  userModelData
+
+userModel.find({Email:Email}).then(result=>{
+  if(result!=undefined && result.length===0){
+    userModelData
     .save()
     .then((result) => {
       res.status(200).json({
@@ -27,6 +30,20 @@ exports.userSignUp = async (req, res, next) => {
     .catch((err) => {
       res.status(401).json({ message: err, statusCode: 401 });
     });
+  }else{
+    res.status(401).json({
+      statusCode:401,
+      message:"user already exist ...."
+    })
+  }
+}).catch(err=>{
+  res.status(401).json({
+    statusCode:401,
+    message:err
+  })
+})
+  
+
 };
 
 // *********Login User*********
