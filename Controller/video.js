@@ -1,3 +1,4 @@
+const { $where } = require("../Model/user");
 const videoDetailsModel = require("../Model/video");
 // ********Post Video Details in  video collection***********
 exports.PostVideoDetail = async (req, res, next) => {
@@ -47,37 +48,18 @@ exports.GetVideoDetails = async (req, res, next) => {
     });
 };
 
-//******** Get All  Posted videos******** */
-exports.GetPostVideo = async (req, res, next) => {
-  const userId = req.body.userId;
-  videoDetailsModel
-    .find()
-    .$where({ publish: true })
-    .$and({userId:userId})
-    .then((result) => {
-      res.status(200).json({
-        message:"Posted Video Fetch Successfully",
-        PostedVide:result
-      })
-    })
-    .catch((err) => {
-      res.status(401).json({ message: err });
-    });
-};
-
 // ************ Get All Save Videos*************
 
-exports.GetSaveVideo = async (req, res, next) => {
+exports.GetSaveAndPostVideo = async (req, res, next) => {
   const userId = req.body.userId;
+  const publish  = req.body.publish
   videoDetailsModel
-    .find()
-    .$where({ publish: false })
-    .$and({userId:userId})
+    .find($where[{userId: userId }]).and({publish:publish})
     .then((result) => {
       res.status(200).json({
-        message:"Posted Video Fetch Successfully",
-        PostedVide:result
-      })
+        message: "Posted Video Fetch Successfully",
+        PostedVide: result,
+      });
     })
     .catch((err) => {
       res.status(401).json({ message: err });

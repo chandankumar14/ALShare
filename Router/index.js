@@ -11,8 +11,7 @@ const followersController = require("../Controller/follower");
 // *********Vidoe Module **************
 Router.post(`/video_details`, videoController.PostVideoDetail);
 Router.get(`/video_details_list`, videoController.GetVideoDetails);
-Router.post(`/posted_video_by_userId`, videoController.GetPostVideo);
-Router.post(`/save_video_by_userId`, videoController.GetSaveVideo);
+Router.post(`/save_post_video`, videoController.GetSaveAndPostVideo);
 
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSignUp);
