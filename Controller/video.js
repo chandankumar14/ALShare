@@ -9,7 +9,7 @@ exports.PostVideoDetail = async (req, res, next) => {
   const videoType = req.body.videoType;
   const videoSource = req.body.videoSource;
   const userId = req.body.userId;
-  const publish  =  req.body.publish;
+  const publish = req.body.publish;
   const videoDetail = new videoDetailsModel({
     title: title,
     description: description,
@@ -18,7 +18,7 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoType: videoType,
     videoSource: videoSource,
     userId: userId,
-    publish:publish
+    publish: publish,
   });
 
   videoDetail
@@ -26,25 +26,33 @@ exports.PostVideoDetail = async (req, res, next) => {
     .then((result) => {
       res
         .status(200)
-        .json({ message: " video posted successfull", user: result });
+        .json({
+          statusCode: 200,
+          message: " video posted successfull",
+          user: result,
+          
+        });
     })
     .catch((err) => {
-      res.status(401).json({ message: err });
+      res.status(401).json({ message: err, statusCode: 401 });
     });
 };
 
 // **********Get All posted video*************
 exports.GetVideoDetails = async (req, res, next) => {
   videoDetailsModel
-    .find().populate("userId",`Username Email password`)
+    .find()
+    .populate("userId", `Username Email password`)
     .then((result) => {
       res.status(200).json({
+        statusCode: 200,
         message: "All Videos List ",
         Videos: result,
+        
       });
     })
     .catch((err) => {
-      res.status(401).json({ message: err });
+      res.status(401).json({ message: err, statusCode: 401 });
     });
 };
 
@@ -52,16 +60,19 @@ exports.GetVideoDetails = async (req, res, next) => {
 
 exports.GetSaveAndPostVideo = async (req, res, next) => {
   const userId = req.body.userId;
-  const publish  = req.body.publish
+  const publish = req.body.publish;
   videoDetailsModel
-    .find($where[{userId: userId }]).and({publish:publish})
+    .find($where[{ userId: userId }])
+    .and({ publish: publish })
     .then((result) => {
       res.status(200).json({
+        statusCode: 200,
         message: "Posted Video Fetch Successfully",
         PostedVide: result,
+        
       });
     })
     .catch((err) => {
-      res.status(401).json({ message: err });
+      res.status(401).json({ message: err, statusCode: 401 });
     });
 };
