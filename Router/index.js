@@ -16,6 +16,7 @@ Router.post(`/save_video_by_userId`, videoController.GetSaveVideo);
 
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSignUp);
+Router.post("/user_login",userController.LoginUser)
 Router.get("/all_user_list", userController.GetAllUserList);
 Router.post("/user_by_id", userController.GetUserDetailsById);
 Router.put("/edit_user_detail", userController.FindByIdAndUpdate);

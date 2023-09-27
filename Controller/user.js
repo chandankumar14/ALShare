@@ -27,6 +27,33 @@ exports.userSignUp = async (req, res, next) => {
     });
 };
 
+// *********Login User*********
+exports.LoginUser = async (req, res, next) => {
+  const Username = req.body.Username;
+  const Email = req.body.Email;
+  userModel
+    .find({ Username: Username, Email: Email })
+    .then((result) => {
+      if(result.length >0){
+        res.status(200).json({
+          message: "user login successful",
+          user: result,
+        });
+      }else{
+        res.status(200).json({
+        message: "user doesn't exist ",
+        });
+      }
+      
+    })
+    .catch((err) => {
+      res.status(401).json({
+        message: err,
+      });
+    });
+};
+
+
 // *********** Fetch All User List ************
 exports.GetAllUserList = async (req, res, next) => {
   userModel
