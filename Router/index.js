@@ -5,8 +5,9 @@ const videoController = require("../Controller/video");
 // ******** All User Controller section ****************
 const userController = require("../Controller/user");
 // *********Vidoe Module **************
-Router.post(`/video_details`, videoController.PostVideoDetails);
+Router.post(`/video_details`, videoController.PostVideoDetail);
 Router.get(`/video_details_list`, videoController.GetVideoDetails);
+Router.post(`/posted_video_by_userId`,videoController.GetPostVideo)
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSignUp);
 Router.get("/all_user_list", userController.GetAllUserList);
