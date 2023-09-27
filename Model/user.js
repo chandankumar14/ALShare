@@ -7,7 +7,7 @@ const userSchema = new Schema({
   },
   Email: {
     type: String,
-    default: `Email`,
+    required: true,
   },
   Avatar: {
     type: String,
@@ -23,7 +23,7 @@ const userSchema = new Schema({
   },
   password:{
     type:String,
-    default:`sdsgscsycywewfyw`
+    default:`null`
   }
 });
 

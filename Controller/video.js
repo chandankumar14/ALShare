@@ -64,3 +64,22 @@ exports.GetPostVideo = async (req, res, next) => {
       res.status(401).json({ message: err });
     });
 };
+
+// ************ Get All Save Videos*************
+
+exports.GetSaveVideo = async (req, res, next) => {
+  const userId = req.body.userId;
+  videoDetailsModel
+    .find()
+    .$where({ publish: false })
+    .$and({userId:userId})
+    .then((result) => {
+      res.status(200).json({
+        message:"Posted Video Fetch Successfully",
+        PostedVide:result
+      })
+    })
+    .catch((err) => {
+      res.status(401).json({ message: err });
+    });
+};
