@@ -15,12 +15,16 @@ Router.post(`/save_post_video`, videoController.GetSaveAndPostVideo);
 
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSignUp);
-Router.post("/user_login",userController.LoginUser)
+Router.post("/otp_verification",userController.OTPVerification);
+Router.post("sign_up_social_media",userController.SignUpWithSocialMedia)
+Router.post("/user_login",userController.LoginUser);
 Router.get("/all_user_list", userController.GetAllUserList);
 Router.post("/user_by_id", userController.GetUserDetailsById);
 Router.put("/edit_user_detail", userController.FindByIdAndUpdate);
 
 // ************ Following and Followers Modules
 Router.post("/follow", followersController.Follow);
+Router.post("/following_list",followersController.GetFollowing)
+Router.post("/follower_list",followersController.GetFollowers)
 
 module.exports = Router;

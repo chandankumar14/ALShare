@@ -10,7 +10,8 @@ exports.PostVideoDetail = async (req, res, next) => {
   const videoSource = req.body.videoSource;
   const userId = req.body.userId;
   const publish = req.body.publish;
-  const thumbnail = req.body.thumbnail
+  const thumbnail = req.body.thumbnail;
+  const likes = req.body.likes
   const videoDetail = new videoDetailsModel({
     title: title,
     description: description,
@@ -20,7 +21,8 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoSource: videoSource,
     userId: userId,
     publish: publish,
-    thumbnail:thumbnail
+    thumbnail:thumbnail,
+    likes:likes
   });
 
   videoDetail
@@ -78,3 +80,5 @@ exports.GetSaveAndPostVideo = async (req, res, next) => {
       res.status(401).json({ message: err, statusCode: 401 });
     });
 };
+
+// ****************** Get All Following user Videos **************

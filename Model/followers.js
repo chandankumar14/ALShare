@@ -1,13 +1,15 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
-const FollowerSchema = new Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
-  },
-  followers: {
-    type: Array,
-  },
-});
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
-module.exports = mongoose.model("followers", FollowerSchema);
+const FollowersSchema = new Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
+    },
+    followers:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users"
+    },
+})
+
+module.exports = mongoose.model("Followers", FollowersSchema)

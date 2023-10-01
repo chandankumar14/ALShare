@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const schema = mongoose.Schema;
-const videoDetails = new schema({
+const videoSchema = new schema({
   title: {
     type: String,
     required: true,
@@ -36,10 +36,14 @@ const videoDetails = new schema({
     required:true,
     default:false
   },
+  likes:{
+    type:Number,
+    default:0
+  },
   thumbnail:{
     type:String,
     required:true
   }
 });
 
-module.exports = mongoose.model("videos", videoDetails);
+module.exports = mongoose.model("videos", videoSchema);
