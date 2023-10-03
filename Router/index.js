@@ -14,7 +14,7 @@ Router.get(`/video_details_list`, videoController.GetVideoDetails);
 Router.post(`/save_post_video`, videoController.GetSaveAndPostVideo);
 
 //**********User Module section ***********
-Router.post("/user_sign_up", userController.userSignUp);
+Router.post("/user_sign_up", userController.userSign_up);
 Router.post("/otp_verification",userController.OTPVerification);
 Router.post("sign_up_social_media",userController.SignUpWithSocialMedia)
 Router.post("/user_login",userController.LoginUser);

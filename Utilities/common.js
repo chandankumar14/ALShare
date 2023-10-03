@@ -48,21 +48,25 @@ async function EncryptPassword(pass) {
 async function SendOtpToMobile(phone_number) {
   const route = process.env.ROUTE
   const variables_values = generateOTP()
+  const encrypt_pass = await EncryptPassword(variables_values)
   const numbers = phone_number
   const flash = "0"
   const fast2sms_base_url = process.env.FAST_2_SMS_URL
   const authorization = process.env.AUTHORIZATION_KEY
   const Url = `${fast2sms_base_url}?authorization=${authorization}&route=${route}&variables_values=${variables_values}&flash=${flash}&numbers=${numbers}`
   const response = await axios.get(Url)
-  return {
-    response: response.data.return,
-    encrypt_pass: EncryptPassword(variables_values)
+  if (response && response != undefined && encrypt_pass && encrypt_pass != undefined) {
+    return {
+      response: response.data.return,
+      encrypt_pass: encrypt_pass
+    }
   }
 }
 // ********** send OTP to email Address ******* 
-function SendOtpToEmail(Email) {
+async function SendOtpToEmail(Email) {
   const OTP = generateOTP()
   const Email_Address = Email;
+  const encrypt_pass  = await EncryptPassword(OTP) 
   const User_Name = Email_Address.split("@")[0]
   const transporter = nodemailer.createTransport({
     service: process.env.EMAIL_SERVICE_NAME,
@@ -71,10 +75,6 @@ function SendOtpToEmail(Email) {
       pass: process.env.EMAIL_USER_PASS
     }
   });
-  const returnpayload={
-    encrypt_pass:EncryptPassword(OTP),
-    User_Name:User_Name
-  }
   const mailOptions = {
     from: 'chandan.kumar@acelucid.com',
     to: Email,
@@ -92,12 +92,13 @@ function SendOtpToEmail(Email) {
             </div>
             </div>`
   };
-  transporter.sendMail(mailOptions).then(result => {
-    returnpayload.response = result.response
-    }).catch(err => {
-    console.log(err)
-  })
-return returnpayload
+  const Result = await transporter.sendMail(mailOptions)
+  if (Result && Result != undefined  && encrypt_pass && encrypt_pass!=undefined) {
+    return {
+      encrypt_pass:encrypt_pass,
+      User_Name: User_Name
+    }
+  }
 }
 
 module.exports = {

@@ -31,7 +31,7 @@ const videoSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  publish:{
+  videoStatus:{
     type:Boolean,
     required:true,
     default:false
@@ -43,6 +43,10 @@ const videoSchema = new schema({
   thumbnail:{
     type:String,
     required:true
+  },
+  duration:{
+    type:String,
+    default:`00`
   }
 });
 

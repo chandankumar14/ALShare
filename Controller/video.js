@@ -10,7 +10,7 @@ exports.PostVideoDetail = async (req, res, next) => {
   const videoType = req.body.videoType;
   const videoSource = req.body.videoSource;
   const userId = req.body.userId;
-  const publish = req.body.publish;
+  const videoStatus = req.body.videoStatus;
   const thumbnail = req.body.thumbnail;
   const likes = req.body.likes
   const videoDetail = new videoDetailsModel({
@@ -21,9 +21,10 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoType: videoType,
     videoSource: videoSource,
     userId: userId,
-    publish: publish,
+    videoStatus: videoStatus,
     thumbnail: thumbnail,
-    likes: likes
+    likes: likes,
+    duration:duration
   });
 
   videoDetail
@@ -65,10 +66,10 @@ exports.GetVideoDetails = async (req, res, next) => {
 
 exports.GetSaveAndPostVideo = async (req, res, next) => {
   const userId = req.body.userId;
-  const publish = req.body.publish;
+  const videoStatus = req.body.videoStatus;
   videoDetailsModel
     .find($where[{ userId: userId }])
-    .and({ publish: publish })
+    .and({ videoStatus: videoStatus })
     .then((result) => {
       res.status(200).json({
         statusCode: 200,
