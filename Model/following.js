@@ -10,7 +10,6 @@ const FollowingSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },
-   
 },
     { timestamps: true }
 )

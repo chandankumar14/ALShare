@@ -1,5 +1,6 @@
 const { $where } = require("../Model/user");
 const videoDetailsModel = require("../Model/video");
+const followingModel = require("../Model/following");
 // ********Post Video Details in  video collection***********
 exports.PostVideoDetail = async (req, res, next) => {
   const title = req.body.title;
@@ -21,8 +22,8 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoSource: videoSource,
     userId: userId,
     publish: publish,
-    thumbnail:thumbnail,
-    likes:likes
+    thumbnail: thumbnail,
+    likes: likes
   });
 
   videoDetail
@@ -34,7 +35,7 @@ exports.PostVideoDetail = async (req, res, next) => {
           statusCode: 200,
           message: " video posted successfull",
           user: result,
-          
+
         });
     })
     .catch((err) => {
@@ -52,7 +53,7 @@ exports.GetVideoDetails = async (req, res, next) => {
         statusCode: 200,
         message: "All Videos List ",
         Videos: result,
-        
+
       });
     })
     .catch((err) => {
@@ -73,7 +74,7 @@ exports.GetSaveAndPostVideo = async (req, res, next) => {
         statusCode: 200,
         message: "Posted Video Fetch Successfully",
         PostedVide: result,
-        
+
       });
     })
     .catch((err) => {
@@ -81,4 +82,32 @@ exports.GetSaveAndPostVideo = async (req, res, next) => {
     });
 };
 
-// ****************** Get All Following user Videos **************
+// ****************** Get All Followers user Videos **************
+exports.GetFollowersVideos = async (req, res, next) => {
+  const userId = req.body.userId
+  const FollowingUserId = [];
+  followingModel.find($where[{ userId: userId }]).select("userId").populate("following", "_id").limit(100).then(result => {
+    result.map(item => {
+      FollowingUserId.push(item.following._id)
+    })
+    if (FollowingUserId.length > 0) {
+      videoDetailsModel.find({ userId: FollowingUserId }).then(result => {
+        res.status(200).json({
+          statusCode: 200,
+          videos: result
+        })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: err
+        })
+      })
+    }
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: err
+    })
+  })
+}
+

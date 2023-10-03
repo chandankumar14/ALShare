@@ -26,5 +26,6 @@ Router.put("/edit_user_detail", userController.FindByIdAndUpdate);
 Router.post("/follow", followersController.Follow);
 Router.post("/following_list",followersController.GetFollowing)
 Router.post("/follower_list",followersController.GetFollowers)
+Router.post("/followers_videos",videoController.GetFollowersVideos)
 
 module.exports = Router;

@@ -10,6 +10,7 @@ const FollowersSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
     },
+    
 })
 
 module.exports = mongoose.model("Followers", FollowersSchema)
