@@ -54,7 +54,6 @@ exports.GetVideoDetails = async (req, res, next) => {
         statusCode: 200,
         message: "All Videos List ",
         Videos: result,
-
       });
     })
     .catch((err) => {
