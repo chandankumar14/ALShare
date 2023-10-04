@@ -24,6 +24,7 @@ Router.put("/edit_user_detail", userController.FindByIdAndUpdate);
 
 // ************ Following and Followers Modules
 Router.post("/follow", followersController.Follow);
+Router.post("/unfollow", followersController.unFollowUser)
 Router.post("/following_list",followersController.GetFollowing)
 Router.post("/follower_list",followersController.GetFollowers)
 Router.post("/followers_videos",videoController.GetFollowersVideos)
