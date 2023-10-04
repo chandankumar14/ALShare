@@ -30,6 +30,10 @@ const userSchema = new Schema(
       type: String,
       default: `null`,
     },
+    otpVerification:{
+      type:Boolean,
+      default:false
+    }
   },
   { timestamps: true }
 );

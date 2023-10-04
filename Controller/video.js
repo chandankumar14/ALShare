@@ -12,7 +12,8 @@ exports.PostVideoDetail = async (req, res, next) => {
   const userId = req.body.userId;
   const videoStatus = req.body.videoStatus;
   const thumbnail = req.body.thumbnail;
-  const likes = req.body.likes
+  const likes = req.body.likes;
+  const duration = req.body.duration;
   const videoDetail = new videoDetailsModel({
     title: title,
     description: description,
