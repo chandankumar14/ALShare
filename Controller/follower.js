@@ -82,3 +82,18 @@ exports.GetFollowers = async (req, res, next) => {
     })
   })
 }
+
+exports.unFollowUser = async (req, res, next) => {
+  const userId = req.body.userId;
+  const unFollowingId = req.body.unFollowingId;
+  const unfollowingResult = await followingModel.findOneAndRemove({ userId: userId, following: unFollowingId })
+  const RemoveFollowers = await followersModel.findOneAndRemove({ userId: unFollowingId, followers: userId })
+  if(unfollowingResult && unfollowingResult!=undefined &&  RemoveFollowers && !RemoveFollowers){
+    res.status(200).json({
+      statusCode:200,
+      message:`unfollowing successfull...`,
+      unfollowingUser:unfollowingResult
+    })
+  }
+
+}

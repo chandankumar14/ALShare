@@ -68,14 +68,12 @@ exports.GetSaveAndPostVideo = async (req, res, next) => {
   const userId = req.body.userId;
   const videoStatus = req.body.videoStatus;
   videoDetailsModel
-    .find($where[{ userId: userId }])
-    .and({ videoStatus: videoStatus })
+    .find({$and:[{ userId:userId},{videoStatus:videoStatus}]})
     .then((result) => {
       res.status(200).json({
         statusCode: 200,
         message: "Posted Video Fetch Successfully",
         PostedVide: result,
-
       });
     })
     .catch((err) => {
