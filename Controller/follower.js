@@ -51,11 +51,12 @@ exports.Follow = async (req, res, next) => {
 // ********** Get All following user list***********
 exports.GetFollowing = async (req, res, next) => {
   const userId = req.body._id;
-  followingModel.find({ userId: userId}).populate("following", "-password").then(result => {
+  followingModel.find({ userId: userId }).populate("following", `_id Username Email createdAt updatedAt`).then(result => {
     res.status(200).json({
       statusCode: 200,
       message: "All following user.....",
-      result: result
+      count: result.length,
+      result: result,
     })
   }).catch(err => {
     res.status(401).json({
@@ -69,9 +70,10 @@ exports.GetFollowing = async (req, res, next) => {
 
 exports.GetFollowers = async (req, res, next) => {
   const userId = req.body._id;
-  followersModel.find({ userId: userId }).populate("followers", "-password").limit(100).then(result => {
+  followersModel.find({ userId: userId }).populate("followers", `_id Username Email createdAt updatedAt`).limit(100).then(result => {
     res.status(200).json({
       statusCode: 200,
+      count: result.length,
       message: "All Followers List ....",
       result: result,
     })
