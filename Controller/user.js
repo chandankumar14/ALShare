@@ -188,12 +188,12 @@ exports.OTPVerification = async (req, res, next) => {
   common.EncryptPassword(OTP).then(result => {
     userModel.find({ password: result }).then(async result1 => {
       if (result1 != undefined && result1.length > 0) {
-       const verification = await userModel.findOneAndUpdate({password:result},{otpVerification:true},{ new: true })
+       const verification = await userModel.findOneAndUpdate({password:result},{otpVerification:true},{new :true})
        if(verification){
         res.status(200).json({
           statusCode: 200,
           message: `OTP verification is successfull`,
-          result: result1
+          result: verification
         })
        }
        } else {
