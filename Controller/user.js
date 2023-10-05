@@ -58,17 +58,19 @@ exports.userSign_up = async (req, res, next) => {
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`
+          message: `OTP has been sent to you ${Email_Phone}`,
+          result:[updatepass]
         })
       }
     }
     else {
       const result = await common.SendOtpToMobile(Email_Phone)
-      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass })
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass },{new:true})
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`
+          message: `OTP has been sent to you ${Email_Phone}`,
+          result:[updatepass]
         })
       }
     }
