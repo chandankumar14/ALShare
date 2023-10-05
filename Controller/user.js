@@ -59,7 +59,7 @@ exports.userSign_up = async (req, res, next) => {
         res.status(200).json({
           statusCode: 200,
           message: `OTP has been sent to you ${Email_Phone}`,
-          result:[updatepass]
+          result:updatepass
         })
       }
     }
@@ -70,7 +70,7 @@ exports.userSign_up = async (req, res, next) => {
         res.status(200).json({
           statusCode: 200,
           message: `OTP has been sent to you ${Email_Phone}`,
-          result:[updatepass]
+          result:updatepass
         })
       }
     }
