@@ -49,10 +49,42 @@ exports.userSign_up = async (req, res, next) => {
       })
     }
 
-  } else {
+  }
+  else if (userCheck[0].otpVerification === false) {
+    const _id = userCheck[0]._id
+    if (Email_Phone.match(Regex)) {
+      const result = await common.SendOtpToEmail(Email_Phone)
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass })
+      if (updatepass) {
+        res.status(200).json({
+          statusCode: 200,
+          message: `OTP has been sent to you ${Email_Phone}`
+        })
+      }
+    }
+    else {
+      const result = await common.SendOtpToMobile(Email_Phone)
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass })
+      if (updatepass) {
+        res.status(200).json({
+          statusCode: 200,
+          message: `OTP has been sent to you ${Email_Phone}`
+        })
+      }
+    }
+  }
+  else if (userCheck.length > 0 && userCheck[0].otpVerification === true) {
     res.status(401).json({
       statusCode: 200,
-      message: `user already exist...`
+      message: `you are logedIn successfully...`,
+      result: userCheck
+    })
+  }
+  else {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somthing going wrong please check again...`,
+
     })
   }
 }
