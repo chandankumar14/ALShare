@@ -19,7 +19,7 @@ exports.userSign_up = async (req, res, next) => {
         res.status(200).json({
           statusCode: 200,
           message: `OTP has been to your Email ${Email_Phone}`,
-          response: response
+          result: response
         })
       }).catch(err => {
         res.status(401).json({
@@ -39,7 +39,7 @@ exports.userSign_up = async (req, res, next) => {
         res.status(200).json({
           statusCode: 200,
           message: `OTP has been to your phone number ${Email_Phone}`,
-          response: response
+          result: response
         })
       }).catch(err => {
         res.status(401).json({
