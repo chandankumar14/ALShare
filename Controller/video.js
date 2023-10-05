@@ -25,7 +25,7 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoStatus: videoStatus,
     thumbnail: thumbnail,
     likes: likes,
-    duration:duration
+    duration: duration
   });
 
   videoDetail
@@ -68,7 +68,7 @@ exports.GetSaveAndPostVideo = async (req, res, next) => {
   const userId = req.body.userId;
   const videoStatus = req.body.videoStatus;
   videoDetailsModel
-    .find({$and:[{ userId:userId},{videoStatus:videoStatus}]})
+    .find({ $and: [{ userId: userId }, { videoStatus: videoStatus }] })
     .then((result) => {
       res.status(200).json({
         statusCode: 200,
@@ -110,3 +110,34 @@ exports.GetFollowersVideos = async (req, res, next) => {
   })
 }
 
+exports.LikeVideo = async (req, res, next) => {
+  const _id = req.body._id;
+  videoDetailsModel.findOneAndUpdate({ _id: _id }, { $inc: { likes: 1 } }, { new: true }).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `you are liking video `,
+      video: result
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: err
+    })
+  })
+}
+
+exports.unLikeVideo = async (req, res, next) => {
+  const _id = req.body._id;
+  videoDetailsModel.findOneAndUpdate({ _id: _id, likes: { $gte: 1 } }, { $inc: { likes: -1 } }, { new: true }).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `you are unliking video `,
+      video: result
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: err
+    })
+  })
+}
