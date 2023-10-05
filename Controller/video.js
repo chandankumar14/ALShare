@@ -48,8 +48,8 @@ exports.PostVideoDetail = async (req, res, next) => {
 // **********Get All posted video*************
 exports.GetVideoDetails = async (req, res, next) => {
   videoDetailsModel
-    .find()
-    .populate("userId", `Username Email password`)
+    .find({})
+    .populate("userId", `Username Email Avatar`)
     .then((result) => {
       res.status(200).json({
         statusCode: 200,
