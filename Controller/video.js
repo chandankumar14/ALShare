@@ -141,3 +141,36 @@ exports.unLikeVideo = async (req, res, next) => {
     })
   })
 }
+
+exports.DeleteUserVideo = async (req, res, next) => {
+  const videoId = req.body.videoId;
+  videoDetailsModel.findByIdAndDelete(videoId).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: 'video has been deleted...',
+      result:result
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somthing going wrong , please check...`
+    })
+  })
+}
+
+exports.PostdraftVideo = async(req,res,next)=>{
+  const videoId = req.body.videoId;
+  const videoStatus = true;
+  videoDetailsModel.findByIdAndUpdate({_id:videoId},{videoStatus:videoStatus},{new:true}).then(result=>{
+    res.status(200).json({
+      statusCode:200,
+      message:` your draft video is posted successfully...`,
+      result:result
+    })
+  }).catch(err=>{
+    res.status(401).json({
+      statusCode:401,
+      message:`somthing going wrong , please check..`
+    })
+  })
+}
