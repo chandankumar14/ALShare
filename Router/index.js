@@ -2,6 +2,7 @@ const express = require("express");
 const Router = express.Router();
 // ******** All Video controller Section ************
 const videoController = require("../Controller/video");
+const favouriteController = require("../Controller/favourite")
 // ******** All User Controller section ****************
 const userController = require("../Controller/user");
 
@@ -14,7 +15,8 @@ Router.get(`/video_details_list`, videoController.GetVideoDetails);
 Router.post(`/save_post_video`, videoController.GetSaveAndPostVideo);
 Router.post(`/video_like`, videoController.LikeVideo);
 Router.post(`/video_unlike`,videoController.unLikeVideo)
-
+Router.post(`/save_favorites_videos`,favouriteController.SaveFavouritesVideo)
+Router.post(`/user_favourites_videos`,favouriteController.GetUserFavouritesVideos)
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSign_up);
 Router.post("/otp_verification",userController.OTPVerification);
