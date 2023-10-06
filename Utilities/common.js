@@ -14,6 +14,16 @@ function generateOTP() {
   return OTP;
 }
 
+// ************** Generate username **********
+function generateUsername() {
+  var digits = '0123456789';
+  let TwoDigit = '';
+  for (let i = 0; i < 3; i++) {
+    TwoDigit += digits[Math.floor(Math.random() * 10)];
+  }
+  const User_Name  = "user".concat(TwoDigit)
+  return User_Name;
+}
 // ************ password Encryption using node crypto module*********** 
 async function EncryptPassword(pass) {
   const secret_vector = process.env.SECRET_VECTOR;
@@ -105,5 +115,6 @@ module.exports = {
   EncryptPassword,
   DecryptPassowrd,
   SendOtpToMobile,
-  SendOtpToEmail
+  SendOtpToEmail,
+  generateUsername
 }

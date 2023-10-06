@@ -30,8 +30,10 @@ exports.userSign_up = async (req, res, next) => {
 
     } else {
       // ******** Send OTP to mobile number*********
+      const userName =  common.generateUsername();
       const result = await common.SendOtpToMobile(Email_Phone)
       const userModelData = new userModel({
+        Username:userName,
         phone: Email_Phone,
         password: result.encrypt_pass,
       });
