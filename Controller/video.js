@@ -1,6 +1,7 @@
 const { $where } = require("../Model/user");
 const videoDetailsModel = require("../Model/video");
 const followingModel = require("../Model/following");
+const likeComment = require("../Model/like_comment")
 // ********Post Video Details in  video collection***********
 exports.PostVideoDetail = async (req, res, next) => {
   const title = req.body.title;
@@ -44,7 +45,6 @@ exports.PostVideoDetail = async (req, res, next) => {
       res.status(401).json({ message: err, statusCode: 401 });
     });
 };
-
 // **********Get All posted video*************
 exports.GetVideoDetails = async (req, res, next) => {
   videoDetailsModel
@@ -110,45 +110,89 @@ exports.GetFollowersVideos = async (req, res, next) => {
   })
 }
 
+// ************** like  video*************
 exports.LikeVideo = async (req, res, next) => {
   const _id = req.body._id;
-  videoDetailsModel.findOneAndUpdate({ _id: _id }, { $inc: { likes: 1 } }, { new: true }).then(result => {
-    res.status(200).json({
-      statusCode: 200,
-      message: `you are liking video `,
-      video: result
+  const userId = req.body.userId;
+  const likeStatus = await likeComment.find({ $and: [{ videoDetails: _id }, { userId: userId }] });
+  if (likeStatus && likeStatus.length === 0) {
+    const likeCommentpayload = new likeComment({
+      userId: userId,
+      videoDetails: _id,
+      like: true
     })
-  }).catch(err => {
+    likeCommentpayload.save().then(result => {
+      videoDetailsModel.findOneAndUpdate({ _id: _id }, { $inc: { likes: 1 } }, { new: true }).then(result => {
+        res.status(200).json({
+          statusCode: 200,
+          message: `you are liking video `,
+          video: result,
+          like: true
+        })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: err
+        })
+      })
+
+    }).catch(err => {
+      res.status(401).json({
+        statusCode: 401,
+        message: err
+      })
+    })
+  } else {
     res.status(401).json({
       statusCode: 401,
-      message: err
+      message: `sorry can't like `,
+      like: false
     })
-  })
+  }
 }
-
+// ************ unlike video*********
 exports.unLikeVideo = async (req, res, next) => {
+  const userId = req.body.userId
   const _id = req.body._id;
-  videoDetailsModel.findOneAndUpdate({ _id: _id, likes: { $gte: 1 } }, { $inc: { likes: -1 } }, { new: true }).then(result => {
-    res.status(200).json({
-      statusCode: 200,
-      message: `you are unliking video `,
-      video: result
+  const likeStatus = await likeComment.find({ $and: [{ videoDetails: _id }, { userId: userId }] });
+  if (likeStatus && likeStatus.length > 0) {
+    likeComment.findOneAndDelete({ $and: [{ userId: userId }, { videoDetails: _id }] }).then(resul => {
+      videoDetailsModel.findOneAndUpdate({ _id: _id, likes: { $gte: 1 } }, { $inc: { likes: -1 } }, { new: true }).then(result => {
+        res.status(200).json({
+          statusCode: 200,
+          message: `you are unliking video `,
+          unlike: true,
+          video: result
+        })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: err
+        })
+      })
+
+    }).catch(err => {
+      res.status(401).json({
+        statusCode: 401,
+        message: err
+      })
     })
-  }).catch(err => {
+  } else {
     res.status(401).json({
       statusCode: 401,
-      message: err
+      message: `sorry can't unlike`,
+      unlike: false
     })
-  })
+  }
 }
-
+//****************Delete user draft or post video */
 exports.DeleteUserVideo = async (req, res, next) => {
   const videoId = req.body.videoId;
   videoDetailsModel.findByIdAndDelete(videoId).then(result => {
     res.status(200).json({
       statusCode: 200,
       message: 'video has been deleted...',
-      result:result
+      result: result
     })
   }).catch(err => {
     res.status(401).json({
@@ -157,20 +201,20 @@ exports.DeleteUserVideo = async (req, res, next) => {
     })
   })
 }
-
-exports.PostdraftVideo = async(req,res,next)=>{
+//************Post draft video********* */
+exports.PostdraftVideo = async (req, res, next) => {
   const videoId = req.body.videoId;
   const videoStatus = true;
-  videoDetailsModel.findByIdAndUpdate({_id:videoId},{videoStatus:videoStatus},{new:true}).then(result=>{
+  videoDetailsModel.findByIdAndUpdate({ _id: videoId }, { videoStatus: videoStatus }, { new: true }).then(result => {
     res.status(200).json({
-      statusCode:200,
-      message:` your draft video is posted successfully...`,
-      result:result
+      statusCode: 200,
+      message: ` your draft video is posted successfully...`,
+      result: result
     })
-  }).catch(err=>{
+  }).catch(err => {
     res.status(401).json({
-      statusCode:401,
-      message:`somthing going wrong , please check..`
+      statusCode: 401,
+      message: `somthing going wrong , please check..`
     })
   })
 }
