@@ -1,7 +1,6 @@
 const userModel = require("../Model/user");
 const common = require("../Utilities/common")
 // *********** Register new User  *********
-
 exports.userSign_up = async (req, res, next) => {
   const Email_Phone = req.body.Email_Phone;
   const Regex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/

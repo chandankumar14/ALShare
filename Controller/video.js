@@ -47,10 +47,47 @@ exports.PostVideoDetail = async (req, res, next) => {
 };
 // **********Get All posted video*************
 exports.GetVideoDetails = async (req, res, next) => {
-  videoDetailsModel
-    .find({})
-    .populate("userId", `Username Email Avatar`)
+  const userId = req.body.userId
+  videoDetailsModel.aggregate([{
+    $lookup: {
+      from: "users",
+      localField: "userId",
+      foreignField: "_id",
+      as: "videoOwners"
+    }
+  }, {
+    $lookup: {
+      from: "like_commnents",
+      localField: "_id",
+      foreignField: "videoDetails",
+      as: "like",
+    }
+  },
+  {
+    $lookup: {
+      from: "favourites",
+      localField: "_id",
+      foreignField: "videoDetails",
+      as: "favourites",
+    }
+  }
+  ])
+  .sort({ updatedAt: -1 })
     .then((result) => {
+      result.map(item => {
+        if (item.like && item.like.length > 0) {
+          const UserLiked = item.like.filter(items => items.userId == userId)
+          if (UserLiked && UserLiked.length > 0) {
+            item["likeStatus"] = true
+          }
+        }
+        if (item.favourites && item.favourites.length > 0) {
+          const markAsFavourites = item.favourites.filter(items => items.userId == userId);
+          if (markAsFavourites && markAsFavourites.length > 0) {
+            item["favourites"] = true
+          }
+        }
+      })
       res.status(200).json({
         statusCode: 200,
         message: "All Videos List ",

@@ -11,7 +11,7 @@ const followersController = require("../Controller/follower");
 
 // *********Vidoe Module **************
 Router.post(`/video_details`, videoController.PostVideoDetail);
-Router.get(`/video_details_list`, videoController.GetVideoDetails);
+Router.post(`/video_details_list`, videoController.GetVideoDetails);
 Router.post(`/save_post_video`, videoController.GetSaveAndPostVideo);
 Router.post(`/video_like`, videoController.LikeVideo);
 Router.post(`/post_draft_video`,videoController.PostdraftVideo)
@@ -20,6 +20,7 @@ Router.post(`/video_like`,videoController.LikeVideo)
 Router.post(`/save_favorites_videos`,favouriteController.SaveFavouritesVideo)
 Router.post(`/user_favourites_videos`,favouriteController.GetUserFavouritesVideos)
 Router.post(`/delete_video_by_id`,videoController.DeleteUserVideo)
+Router.post(`/delete_favourites_by_id`,favouriteController.DeleteFavouriteVideo)
 //**********User Module section ***********
 Router.post("/user_sign_up", userController.userSign_up);
 Router.post("/otp_verification",userController.OTPVerification);
