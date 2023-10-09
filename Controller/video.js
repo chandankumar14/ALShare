@@ -84,7 +84,7 @@ exports.GetVideoDetails = async (req, res, next) => {
         if (item.favourites && item.favourites.length > 0) {
           const markAsFavourites = item.favourites.filter(items => items.userId == userId);
           if (markAsFavourites && markAsFavourites.length > 0) {
-            item["favourites"] = true
+            item["favouritesStatus"] = true
           }
         }
       })
