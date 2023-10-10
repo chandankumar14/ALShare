@@ -80,7 +80,7 @@ exports.userSign_up = async (req, res, next) => {
     const _id = userCheck[0]._id
     if (Email_Phone.match(Regex)) {
       const result = await common.SendOtpToEmail(Email_Phone)
-      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass })
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass,otpVerification:false })
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
@@ -91,7 +91,7 @@ exports.userSign_up = async (req, res, next) => {
     }
     else {
       const result = await common.SendOtpToMobile(Email_Phone)
-      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass }, { new: true })
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass,otpVerification:false }, { new: true })
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
