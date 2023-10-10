@@ -3,6 +3,7 @@ const common = require("../Utilities/common")
 // *********** Register new User  *********
 exports.userSign_up = async (req, res, next) => {
   const Email_Phone = req.body.Email_Phone;
+  const deviceId = req.body.deviceId
   const Regex = /^([a-zA-Z0-9._%-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/
   const userCheck = await userModel.find({ $or: [{ Email: Email_Phone }, { phone: Email_Phone }] });
   if (userCheck && userCheck.length === 0) {
@@ -75,8 +76,32 @@ exports.userSign_up = async (req, res, next) => {
         })
       }
     }
+  } else if (userCheck.length > 0 && userCheck[0].otpVerification === true && userCheck[0].deviceId != deviceId) {
+    const _id = userCheck[0]._id
+    if (Email_Phone.match(Regex)) {
+      const result = await common.SendOtpToEmail(Email_Phone)
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass })
+      if (updatepass) {
+        res.status(200).json({
+          statusCode: 200,
+          message: `OTP has been sent to you ${Email_Phone}`,
+          result: [updatepass]
+        })
+      }
+    }
+    else {
+      const result = await common.SendOtpToMobile(Email_Phone)
+      const updatepass = await userModel.findByIdAndUpdate(_id, { password: result.encrypt_pass }, { new: true })
+      if (updatepass) {
+        res.status(200).json({
+          statusCode: 200,
+          message: `OTP has been sent to you ${Email_Phone}`,
+          result: [updatepass]
+        })
+      }
+    }
   }
-  else if (userCheck.length > 0 && userCheck[0].otpVerification === true) {
+  else if (userCheck.length > 0 && userCheck[0].otpVerification === true && userCheck[0].deviceId===deviceId) {
     res.status(401).json({
       statusCode: 200,
       message: `you are logedIn successfully...`,
@@ -188,18 +213,19 @@ exports.FindByIdAndUpdate = async (req, res, next) => {
 // ************* OTP verification ****************
 exports.OTPVerification = async (req, res, next) => {
   const OTP = req.body.otp;
+  const deviceId = req.body.deviceId;
   common.EncryptPassword(OTP).then(result => {
     userModel.find({ password: result }).then(async result1 => {
       if (result1 != undefined && result1.length > 0) {
-       const verification = await userModel.findOneAndUpdate({password:result},{otpVerification:true},{new :true})
-       if(verification){
-        res.status(200).json({
-          statusCode: 200,
-          message: `OTP verification is successfull`,
-          result: [verification]
-        })
-       }
-       } else {
+        const verification = await userModel.findOneAndUpdate({ password: result }, { otpVerification: true, deviceId: deviceId }, { new: true })
+        if (verification) {
+          res.status(200).json({
+            statusCode: 200,
+            message: `OTP verification is successfull`,
+            result: [verification]
+          })
+        }
+      } else {
         res.status(401).json({
           statusCode: 401,
           message: `OTP is Invalid`,

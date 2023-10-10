@@ -32,6 +32,10 @@ const userSchema = new Schema(
     otpVerification:{
       type:Boolean,
       default:false
+    },
+    deviceId:{
+      type:String,
+      default:`ALSHare`
     }
   },
   { timestamps: true }
