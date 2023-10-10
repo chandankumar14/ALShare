@@ -107,3 +107,45 @@ exports.unFollowUser = async (req, res, next) => {
     })
   })
 }
+
+exports.userStatus = async (req, res, next) => {
+  const userId = req.body.userId;
+  const loginUserId = req.body.loginUserId;
+  followingModel.find({ userId: loginUserId, following: userId }).then(result => {
+    if (result && result.length > 0) {
+      userModule.findById(userId).then(result1 => {
+        res.status(200).json({
+          statusCode: 200,
+          message: `you are already following `,
+          followingStatus: true,
+          userDetails: result1
+        })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `somting going wrong,${err}`
+        })
+      })
+    } else {
+      userModule.findById(userId).then(result2 => {
+        res.status(200).json({
+          statusCode: 200,
+          message: `start following `,
+          followingStatus: false,
+          userDetails: result2
+        })
+
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `somting going wrong,${err}`
+        })
+      })
+    }
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somting going wrong,${err}`
+    })
+  })
+}

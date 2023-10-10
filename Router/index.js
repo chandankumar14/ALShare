@@ -36,5 +36,6 @@ Router.post("/unfollow", followersController.unFollowUser)
 Router.post("/following_list",followersController.GetFollowing)
 Router.post("/follower_list",followersController.GetFollowers)
 Router.post("/followers_videos",videoController.GetFollowersVideos)
+Router.post("/following_status",followersController.userStatus)
 
 module.exports = Router;

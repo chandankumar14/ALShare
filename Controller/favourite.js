@@ -40,7 +40,7 @@ exports.GetUserFavouritesVideos = async (req, res, next) => {
 
 exports.DeleteFavouriteVideo = async (req, res, next) => {
     const videoId = req.body.videoId;
-    favouriteModel.findByIdAndDelete(videoId).then(result => {
+    favouriteModel.findOneAndDelete({videoDetails:videoId}).then(result => {
         res.status(200).json({
             statusCode: 200,
             message: 'favourites video has been deleted...',
