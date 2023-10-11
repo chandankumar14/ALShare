@@ -103,7 +103,7 @@ exports.GetVideoDetails = async (req, res, next) => {
     .sort({ _id:-1})
     .then((result) => {
       result.map(item => {
-        if (item.like && item.like.length > 0) {
+        if (item.like) {
           const UserLiked = item.like.filter(items => items.userId == userId)
           if (UserLiked && UserLiked.length > 0) {
             item["likeStatus"] = true
@@ -111,14 +111,14 @@ exports.GetVideoDetails = async (req, res, next) => {
             item["likeStatus"] = false
           }
         }
-        if (item.favourites && item.favourites.length > 0) {
+        if (item.favourites) {
           const markAsFavourites = item.favourites.filter(items => items.userId == userId);
           if (markAsFavourites && markAsFavourites.length > 0) {
             item["favouritesStatus"] = true
           } else {
             item["favouritesStatus"] = false
           }
-        } if (followingList && followingList.length > 0) {
+        } if (followingList) {
           const followingStatus = followingList.filter(item1 => item1.following == item.userId);
           if (followingStatus && followingStatus.length > 0) {
             item["followingstatus"] = true
