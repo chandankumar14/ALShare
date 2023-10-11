@@ -48,6 +48,8 @@ exports.PostVideoDetail = async (req, res, next) => {
 // **********Get All posted video*************
 exports.GetVideoDetails = async (req, res, next) => {
   const userId = req.body.userId
+  var followingList = await followingModel.find({ userId: userId });
+  followingList = JSON.parse(JSON.stringify(followingList))
   videoDetailsModel.aggregate([{
     $lookup: {
       from: "users",
@@ -70,21 +72,58 @@ exports.GetVideoDetails = async (req, res, next) => {
       foreignField: "videoDetails",
       as: "favourites",
     }
-  }
+  },
+  {
+      $project: {
+        _id: 1,
+        title: 1,
+        description: 1,
+        tags: 1,
+        link: 1,
+        videoType: 1,
+        videoSource: 1,
+        userId: 1,
+        videoStatus: 1,
+        likes: 1,
+        thumbnail: 1,
+        duration: 1,
+        "videoOwners._id": 1,
+        "videoOwners.Username": 1,
+        "videoOwners.Email": 1,
+        "like._id": 1,
+        "like.userId": 1,
+        "like.videoDetails": 1,
+        "favourites._id": 1,
+        "favourites.userId": 1,
+        "favourites.videoDetails": 1,
+        "favourites.videoOwner": 1
+      }
+    }
   ])
-  .sort({ updatedAt: -1 })
+    .sort({ _id:-1})
     .then((result) => {
       result.map(item => {
         if (item.like && item.like.length > 0) {
           const UserLiked = item.like.filter(items => items.userId == userId)
           if (UserLiked && UserLiked.length > 0) {
             item["likeStatus"] = true
+          } else {
+            item["likeStatus"] = false
           }
         }
         if (item.favourites && item.favourites.length > 0) {
           const markAsFavourites = item.favourites.filter(items => items.userId == userId);
           if (markAsFavourites && markAsFavourites.length > 0) {
             item["favouritesStatus"] = true
+          } else {
+            item["favouritesStatus"] = false
+          }
+        } if (followingList && followingList.length > 0) {
+          const followingStatus = followingList.filter(item1 => item1.following == item.userId);
+          if (followingStatus && followingStatus.length > 0) {
+            item["followingstatus"] = true
+          } else {
+            item["followingstatus"] = false
           }
         }
       })
