@@ -31,23 +31,24 @@ const videoSchema = new schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users",
   },
-  videoStatus:{
-    type:Boolean,
-    required:true,
-    default:false
+  videoStatus: {
+    type: Boolean,
+    required: true,
+    default: false
   },
-  likes:{
-    type:Number,
-    default:0
+  likes: {
+    type: Number,
+    default: 0
   },
-  thumbnail:{
-    type:String,
-    required:true
+  thumbnail: {
+    type: String,
+    required: true
   },
-  duration:{
-    type:String,
-    default:`00`
+  duration: {
+    type: String,
+    default: `00`
   }
-});
+},
+  { timestamps: true });
 
 module.exports = mongoose.model("videos", videoSchema);
