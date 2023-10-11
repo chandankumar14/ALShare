@@ -55,7 +55,7 @@ exports.GetVideoDetails = async (req, res, next) => {
       from: "users",
       localField: "userId",
       foreignField: "_id",
-      as: "videoOwners"
+      as: "videoOwner"
     }
   }, {
     $lookup: {
