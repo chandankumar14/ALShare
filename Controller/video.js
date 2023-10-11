@@ -87,7 +87,7 @@ exports.GetVideoDetails = async (req, res, next) => {
         likes: 1,
         thumbnail: 1,
         duration: 1,
-        "videoOwners._id": 1,
+        "videoOwner._id": 1,
         "videoOwner.Username": 1,
         "videoOwner.Email": 1,
         "like._id": 1,
