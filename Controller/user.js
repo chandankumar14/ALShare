@@ -285,3 +285,19 @@ exports.SignUpWithSocialMedia = async (req, res, next) => {
   })
 }
 
+//*************Log_out user */
+
+exports.LogoutUser = async (req, res, next) => {
+  const userId = req.body._id;
+  userModel.findByIdAndUpdate(userId, { deviceId: "ALShare" }).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `user logout successfully`
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somting going wrong ${err}`
+    })
+  })
+}

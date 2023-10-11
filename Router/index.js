@@ -29,6 +29,7 @@ Router.post("/user_login",userController.LoginUser);
 Router.get("/all_user_list", userController.GetAllUserList);
 Router.post("/user_by_id", userController.GetUserDetailsById);
 Router.put("/edit_user_detail", userController.FindByIdAndUpdate);
+Router.post("/log_out",userController.LogoutUser)
 
 // ************ Following and Followers Modules
 Router.post("/follow", followersController.Follow);
