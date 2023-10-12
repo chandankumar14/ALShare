@@ -11,7 +11,8 @@ let DB_CONNECTION = process.env.CONNECTION_STRING;
 const App = express();
 App.use(cors());
 App.use(bodyParser.json());
-
+App.use(bodyParser.urlencoded({extended:true}))
+App.use(`/${API_URL}/`,express.static("user_profile_image"))
 //************Routing Configuration is Here ************* */
 App.use(`/${API_URL}/`, Router);
 // *************DataBase connect is Here*************

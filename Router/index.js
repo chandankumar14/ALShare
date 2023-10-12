@@ -1,5 +1,6 @@
 const express = require("express");
 const Router = express.Router();
+const common = require("../Utilities/common")
 // ******** All Video controller Section ************
 const videoController = require("../Controller/video");
 const favouriteController = require("../Controller/favourite")
@@ -28,7 +29,7 @@ Router.post("sign_up_social_media",userController.SignUpWithSocialMedia)
 Router.post("/user_login",userController.LoginUser);
 Router.get("/all_user_list", userController.GetAllUserList);
 Router.post("/user_by_id", userController.GetUserDetailsById);
-Router.put("/edit_user_detail", userController.FindByIdAndUpdate);
+Router.put("/edit_user_detail",common.upload_profile_image.single("profile_image"), userController.FindByIdAndUpdate);
 Router.post("/log_out",userController.LogoutUser)
 
 // ************ Following and Followers Modules

@@ -1,5 +1,6 @@
 const axios = require("axios")
 const path = require("path")
+const multer = require("multer")
 require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
@@ -111,10 +112,23 @@ async function SendOtpToEmail(Email) {
   }
 }
 
+const storage = multer.diskStorage({
+  //********cb is call back function ******** */
+  destination: function (req, file, cb) {
+    return cb(null, path.join(__dirname, '../user_profile_image'))
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    return cb(null, `${file.fieldname}_${uniqueSuffix}${path.extname(file.originalname)}`)
+  }
+})
+const upload_profile_image = multer({ storage: storage })
+
 module.exports = {
   EncryptPassword,
   DecryptPassowrd,
   SendOtpToMobile,
   SendOtpToEmail,
-  generateUsername
+  generateUsername,
+  upload_profile_image
 }

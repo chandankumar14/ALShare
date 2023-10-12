@@ -184,7 +184,7 @@ exports.FindByIdAndUpdate = async (req, res, next) => {
   const id = req.body._id;
   const Username = req.body.Username;
   const Email = req.body.Email;
-  const Avatar = req.body.Avatar;
+  const Avatar = req?.file?.filename ? req.file.filename : req.body.Avatar;
   const About = req.body.About;
   const DOB = req.body.DOB;
   const password = req.body.password;
