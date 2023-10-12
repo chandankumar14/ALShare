@@ -18,7 +18,7 @@ exports.userSign_up = async (req, res, next) => {
       userModelData.save().then(response => {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been to your Email ${Email_Phone}`,
+          message: `OTP has been sent to your Email ${Email_Phone}`,
           result: [response]
         })
       }).catch(err => {
@@ -40,13 +40,13 @@ exports.userSign_up = async (req, res, next) => {
       userModelData.save().then(response => {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been to your phone number ${Email_Phone}`,
+          message: `OTP has been sent to your phone number ${Email_Phone}`,
           result: [response]
         })
       }).catch(err => {
         res.status(401).json({
           statusCode: 401,
-          message: `please check phone.. ${err}`
+          message: `please check .. ${err}`
         })
       })
     }
@@ -60,7 +60,7 @@ exports.userSign_up = async (req, res, next) => {
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`,
+          message: `OTP has been sent to your Email ${Email_Phone}`,
           result:[updatepass]
         })
       }
@@ -71,7 +71,7 @@ exports.userSign_up = async (req, res, next) => {
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`,
+          message: `OTP has been sent to your phone number ${Email_Phone}`,
           result:[updatepass]
         })
       }
@@ -84,7 +84,7 @@ exports.userSign_up = async (req, res, next) => {
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`,
+          message: `OTP has been sent to your Email ${Email_Phone}`,
           result: [updatepass]
         })
       }
@@ -95,7 +95,7 @@ exports.userSign_up = async (req, res, next) => {
       if (updatepass) {
         res.status(200).json({
           statusCode: 200,
-          message: `OTP has been sent to you ${Email_Phone}`,
+          message: `OTP has been sent to your phone number ${Email_Phone}`,
           result: [updatepass]
         })
       }
@@ -201,7 +201,7 @@ exports.FindByIdAndUpdate = async (req, res, next) => {
     .then((result) => {
       res.status(200).json({
         statusCode: 200,
-        message: "user Detail is updated  successfully",
+        message: "User Detail is updated  successfully",
         userdetail: result,
       });
     })
@@ -221,7 +221,7 @@ exports.OTPVerification = async (req, res, next) => {
         if (verification) {
           res.status(200).json({
             statusCode: 200,
-            message: `OTP verification is successfull`,
+            message: `OTP verified`,
             result: [verification]
           })
         }

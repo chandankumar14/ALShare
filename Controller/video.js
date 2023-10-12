@@ -4,6 +4,7 @@ const followingModel = require("../Model/following");
 const likeComment = require("../Model/like_comment")
 // ********Post Video Details in  video collection***********
 exports.PostVideoDetail = async (req, res, next) => {
+  const msg = req.body.videoStatus ? `Your video has been succesfully posted..` : `Your video has been successfully saved as draft`;
   const title = req.body.title;
   const description = req.body.description;
   const tags = req.body.tags;
@@ -36,7 +37,7 @@ exports.PostVideoDetail = async (req, res, next) => {
         .status(200)
         .json({
           statusCode: 200,
-          message: " video posted successfull",
+          message: msg,
           user: result,
 
         });
@@ -203,7 +204,7 @@ exports.LikeVideo = async (req, res, next) => {
       videoDetailsModel.findOneAndUpdate({ _id: _id }, { $inc: { likes: 1 } }, { new: true }).then(result => {
         res.status(200).json({
           statusCode: 200,
-          message: `you are liking video `,
+          message: `You are liking a video `,
           video: result,
           like: true
         })
@@ -238,7 +239,7 @@ exports.unLikeVideo = async (req, res, next) => {
       videoDetailsModel.findOneAndUpdate({ _id: _id, likes: { $gte: 1 } }, { $inc: { likes: -1 } }, { new: true }).then(result => {
         res.status(200).json({
           statusCode: 200,
-          message: `you are unliking video `,
+          message: `You are unliking a video `,
           unlike: true,
           video: result
         })
@@ -269,7 +270,7 @@ exports.DeleteUserVideo = async (req, res, next) => {
   videoDetailsModel.findByIdAndDelete(videoId).then(result => {
     res.status(200).json({
       statusCode: 200,
-      message: 'video has been deleted...',
+      message: ' Your video has been deleted successfully...',
       result: result
     })
   }).catch(err => {
@@ -286,7 +287,7 @@ exports.PostdraftVideo = async (req, res, next) => {
   videoDetailsModel.findByIdAndUpdate({ _id: videoId }, { videoStatus: videoStatus }, { new: true }).then(result => {
     res.status(200).json({
       statusCode: 200,
-      message: ` your draft video is posted successfully...`,
+      message: ` Your video is successfully posted...`,
       result: result
     })
   }).catch(err => {
