@@ -47,8 +47,16 @@ const videoSchema = new schema({
   duration: {
     type: String,
     default: `00`
-  }
-},
+  },
+  avgRating: {
+    type: String,
+    default: "0.00"
+  },
+  ratingUserCount: {
+    type: Number,
+    default: 0
+  },
+ },
   { timestamps: true });
 
 module.exports = mongoose.model("videos", videoSchema);

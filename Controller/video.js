@@ -16,6 +16,8 @@ exports.PostVideoDetail = async (req, res, next) => {
   const thumbnail = req.body.thumbnail;
   const likes = req.body.likes;
   const duration = req.body.duration;
+  const avgRating = req.body.avgRating;
+  const ratingUserCount = req.body.ratingUserCount;
   const videoDetail = new videoDetailsModel({
     title: title,
     description: description,
@@ -27,7 +29,9 @@ exports.PostVideoDetail = async (req, res, next) => {
     videoStatus: videoStatus,
     thumbnail: thumbnail,
     likes: likes,
-    duration: duration
+    duration: duration,
+    avgRating: avgRating,
+    ratingUserCount: ratingUserCount,
   });
 
   videoDetail
@@ -75,35 +79,35 @@ exports.GetVideoDetails = async (req, res, next) => {
     }
   },
   {
-      $project: {
-        _id: 1,
-        title: 1,
-        description: 1,
-        tags: 1,
-        link: 1,
-        videoType: 1,
-        videoSource: 1,
-        userId: 1,
-        videoStatus: 1,
-        likes: 1,
-        thumbnail: 1,
-        duration: 1,
-        createdAt:1,
-        updatedAt:1,
-        "videoOwner._id": 1,
-        "videoOwner.Username": 1,
-        "videoOwner.Email": 1,
-        "like._id": 1,
-        "like.userId": 1,
-        "like.videoDetails": 1,
-        "favourites._id": 1,
-        "favourites.userId": 1,
-        "favourites.videoDetails": 1,
-        "favourites.videoOwner": 1
-      }
+    $project: {
+      _id: 1,
+      title: 1,
+      description: 1,
+      tags: 1,
+      link: 1,
+      videoType: 1,
+      videoSource: 1,
+      userId: 1,
+      videoStatus: 1,
+      likes: 1,
+      thumbnail: 1,
+      duration: 1,
+      createdAt: 1,
+      updatedAt: 1,
+      "videoOwner._id": 1,
+      "videoOwner.Username": 1,
+      "videoOwner.Email": 1,
+      "like._id": 1,
+      "like.userId": 1,
+      "like.videoDetails": 1,
+      "favourites._id": 1,
+      "favourites.userId": 1,
+      "favourites.videoDetails": 1,
+      "favourites.videoOwner": 1
     }
+  }
   ])
-    .sort({ _id:-1})
+    .sort({ _id: -1 })
     .then((result) => {
       result.map(item => {
         if (item.like) {
