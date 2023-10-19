@@ -3,6 +3,7 @@ const Router = express.Router();
 const common = require("../Utilities/common")
 // ******** All Video controller Section ************
 const videoController = require("../Controller/video");
+const ratingController = require("../Controller/rating_reaction")
 const favouriteController = require("../Controller/favourite")
 // ******** All User Controller section ****************
 const userController = require("../Controller/user");
@@ -39,5 +40,9 @@ Router.post("/following_list",followersController.GetFollowing)
 Router.post("/follower_list",followersController.GetFollowers)
 Router.post("/followers_videos",videoController.GetFollowersVideos)
 Router.post("/following_status",followersController.userStatus)
+
+//************ Rating section is here********* */
+Router.post("/mark_video_rating",ratingController.MarkVideoRating);
+Router.post("/video_details_by_userId_and_videoId",ratingController.GetRatedvideo)
 
 module.exports = Router;

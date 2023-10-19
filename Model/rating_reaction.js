@@ -13,7 +13,18 @@ const RatingSchema = new Schema({
     rating: {
         type: String,
         default: "0.00"
+    },
+    ratingStatus: {
+        type: Boolean,
+        default: false
+    },
+    reactionType: {
+        type: Number,
+        default: 0
     }
-})
+},
+    {
+        timestamps: true
+    })
 
-module.exports = mongoose.model("ratings", RatingSchema)
+module.exports = mongoose.model("rating_reactions", RatingSchema)
