@@ -91,6 +91,8 @@ exports.GetVideoDetails = async (req, res, next) => {
       videoStatus: 1,
       likes: 1,
       thumbnail: 1,
+      avgRating:1,
+      ratingUserCount:1,
       duration: 1,
       createdAt: 1,
       updatedAt: 1,
