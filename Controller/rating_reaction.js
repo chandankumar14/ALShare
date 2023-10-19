@@ -16,26 +16,63 @@ exports.MarkVideoRating = async (req, res, next) => {
         ratingStatus: ratingStatus,
         reactionType: reactionType,
     })
-    ratingPayload.save().then(result => {
-        videoModule.findByIdAndUpdate(videoId, { avgRating: avgRating, ratingUserCount: ratingUserCount })
-            .then(result1 => {
-                res.status(200).json({
-                    statusCode: 200,
-                    message: `Your rating is saved successfully`,
-                    result: result
-                })
+
+    ratingModule.find({ userId: userId, videoId: videoId }).then(result => {
+        if (result.length > 0) {
+            ratingModule.findOneAndUpdate({ userId: userId, videoId: videoId }, { rating: rating }).then(result1 => {
+                videoModule.findByIdAndUpdate(videoId, { avgRating: avgRating, ratingUserCount: ratingUserCount })
+                    .then(result2 => {
+                        res.status(200).json({
+                            statusCode: 200,
+                            message: `Your rating is saved successfully`,
+                            result: result1
+                        })
+                    }).catch(err => {
+                        res.status(401).json({
+                            statusCode: 401,
+                            message: `somthing going wrong please check and err_message is ${err}`
+                        })
+                    })
             }).catch(err => {
                 res.status(401).json({
                     statusCode: 401,
                     message: `somthing going wrong please check and err_message is ${err}`
                 })
             })
+
+        } else {
+            ratingPayload.save().then(result3 => {
+                videoModule.findByIdAndUpdate(videoId, { avgRating: avgRating, ratingUserCount: ratingUserCount })
+                    .then(result1 => {
+                        res.status(200).json({
+                            statusCode: 200,
+                            message: `Your rating is saved successfully`,
+                            result: result3
+                        })
+                    }).catch(err => {
+                        res.status(401).json({
+                            statusCode: 401,
+                            message: `somthing going wrong please check and err_message is ${err}`
+                        })
+                    })
+            }).catch(err => {
+                res.status(401).json({
+                    statusCode: 401,
+                    message: `somthing going wrong please check and err_message is ${err}`
+                })
+            })
+
+        }
+
     }).catch(err => {
         res.status(401).json({
             statusCode: 401,
             message: `somthing going wrong please check and err_message is ${err}`
         })
+
     })
+
+
 }
 
 
