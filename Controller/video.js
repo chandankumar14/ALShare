@@ -217,7 +217,6 @@ exports.Reaction = async (req, res, next) => {
   const userId = req.body.userId;
   const NAME = req.body.NAME;
   const CODE = req.body.CODE;
-  const COUNT = req.body.COUNT;
   const EMOOJI = req.body.EMOOJI;
   reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
     if (result0.length === 0) {
@@ -251,7 +250,7 @@ exports.Reaction = async (req, res, next) => {
                 reaction: {
                   NAME: NAME,
                   CODE: CODE,
-                  COUNT: COUNT,
+                  COUNT: 1,
                   EMOOJI: EMOOJI
                 }
               }
@@ -292,7 +291,7 @@ exports.Reaction = async (req, res, next) => {
                 reaction: {
                   NAME: NAME,
                   CODE: CODE,
-                  COUNT: COUNT,
+                  COUNT: 1,
                   EMOOJI: EMOOJI
                 }
               }
