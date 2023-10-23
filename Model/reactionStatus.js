@@ -1,6 +1,7 @@
-const mongoose  = require("mongoose");
+const mongoose = require("mongoose");
 const Schema  = mongoose.Schema;
-const LikeCommnetSchema = new Schema({
+
+const ReactionSchema = new Schema({
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "users"
@@ -11,8 +12,13 @@ const LikeCommnetSchema = new Schema({
     },
     reactionStatus: {
         type: Boolean,
-        default: false
+    },
+    code:{
+        type:String,
+    },
+    name:{
+        type:String
     }
 })
 
-module.exports = mongoose.model("like_commnents", LikeCommnetSchema)
+module.exports = mongoose.model("reactionStatus", ReactionSchema)

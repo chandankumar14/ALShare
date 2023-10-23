@@ -1,7 +1,8 @@
 const { $where } = require("../Model/user");
 const videoDetailsModel = require("../Model/video");
 const followingModel = require("../Model/following");
-const likeComment = require("../Model/like_comment")
+const likeComment = require("../Model/like_comment");
+const reactionStatusModel = require("../Model/reactionStatus");
 // ********Post Video Details in  video collection***********
 exports.PostVideoDetail = async (req, res, next) => {
   const msg = req.body.videoStatus ? `Your video has been succesfully posted..` : `Your video has been successfully saved as draft`;
@@ -62,13 +63,6 @@ exports.GetVideoDetails = async (req, res, next) => {
       foreignField: "_id",
       as: "videoOwner"
     }
-  }, {
-    $lookup: {
-      from: "like_commnents",
-      localField: "_id",
-      foreignField: "videoDetails",
-      as: "like",
-    }
   },
   {
     $lookup: {
@@ -91,17 +85,14 @@ exports.GetVideoDetails = async (req, res, next) => {
       videoStatus: 1,
       likes: 1,
       thumbnail: 1,
-      avgRating:1,
-      ratingUserCount:1,
+      avgRating: 1,
+      ratingUserCount: 1,
       duration: 1,
       createdAt: 1,
       updatedAt: 1,
       "videoOwner._id": 1,
       "videoOwner.Username": 1,
       "videoOwner.Email": 1,
-      "like._id": 1,
-      "like.userId": 1,
-      "like.videoDetails": 1,
       "favourites._id": 1,
       "favourites.userId": 1,
       "favourites.videoDetails": 1,
@@ -112,14 +103,6 @@ exports.GetVideoDetails = async (req, res, next) => {
     .sort({ _id: -1 })
     .then((result) => {
       result.map(item => {
-        if (item.like) {
-          const UserLiked = item.like.filter(items => items.userId == userId)
-          if (UserLiked && UserLiked.length > 0) {
-            item["likeStatus"] = true
-          } else {
-            item["likeStatus"] = false
-          }
-        }
         if (item.favourites) {
           const markAsFavourites = item.favourites.filter(items => items.userId == userId);
           if (markAsFavourites && markAsFavourites.length > 0) {
@@ -195,81 +178,6 @@ exports.GetFollowersVideos = async (req, res, next) => {
   })
 }
 
-// ************** like  video*************
-exports.LikeVideo = async (req, res, next) => {
-  const _id = req.body._id;
-  const userId = req.body.userId;
-  const likeStatus = await likeComment.find({ $and: [{ videoDetails: _id }, { userId: userId }] });
-  if (likeStatus && likeStatus.length === 0) {
-    const likeCommentpayload = new likeComment({
-      userId: userId,
-      videoDetails: _id,
-      like: true
-    })
-    likeCommentpayload.save().then(result => {
-      videoDetailsModel.findOneAndUpdate({ _id: _id }, { $inc: { likes: 1 } }, { new: true }).then(result => {
-        res.status(200).json({
-          statusCode: 200,
-          message: `You are liking a video `,
-          video: result,
-          like: true
-        })
-      }).catch(err => {
-        res.status(401).json({
-          statusCode: 401,
-          message: err
-        })
-      })
-
-    }).catch(err => {
-      res.status(401).json({
-        statusCode: 401,
-        message: err
-      })
-    })
-  } else {
-    res.status(401).json({
-      statusCode: 401,
-      message: `sorry can't like `,
-      like: false
-    })
-  }
-}
-// ************ unlike video*********
-exports.unLikeVideo = async (req, res, next) => {
-  const userId = req.body.userId
-  const _id = req.body._id;
-  const likeStatus = await likeComment.find({ $and: [{ videoDetails: _id }, { userId: userId }] });
-  if (likeStatus && likeStatus.length > 0) {
-    likeComment.findOneAndDelete({ $and: [{ userId: userId }, { videoDetails: _id }] }).then(resul => {
-      videoDetailsModel.findOneAndUpdate({ _id: _id, likes: { $gte: 1 } }, { $inc: { likes: -1 } }, { new: true }).then(result => {
-        res.status(200).json({
-          statusCode: 200,
-          message: `You are unliking a video `,
-          unlike: true,
-          video: result
-        })
-      }).catch(err => {
-        res.status(401).json({
-          statusCode: 401,
-          message: err
-        })
-      })
-
-    }).catch(err => {
-      res.status(401).json({
-        statusCode: 401,
-        message: err
-      })
-    })
-  } else {
-    res.status(401).json({
-      statusCode: 401,
-      message: `sorry can't unlike`,
-      unlike: false
-    })
-  }
-}
 //****************Delete user draft or post video */
 exports.DeleteUserVideo = async (req, res, next) => {
   const videoId = req.body.videoId;
@@ -300,6 +208,129 @@ exports.PostdraftVideo = async (req, res, next) => {
     res.status(401).json({
       statusCode: 401,
       message: `somthing going wrong , please check..`
+    })
+  })
+}
+//**************user Reaction on video ********** */
+exports.Reaction = async (req, res, next) => {
+  const videoId = req.body.videoId;
+  const userId = req.body.userId;
+  const NAME = req.body.NAME;
+  const CODE = req.body.CODE;
+  const COUNT = req.body.COUNT;
+  const EMOOJI = req.body.EMOOJI;
+  reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
+    if (result0.length === 0) {
+      const reactionStatusPayload = new reactionStatusModel({
+        videoId: videoId,
+        userId: userId,
+        reactionStatus: true,
+        code: CODE,
+        name: NAME
+      })
+      reactionStatusPayload.save().then(result01 => {
+        videoDetailsModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result1 => {
+          if (result1.length > 0) {
+            videoDetailsModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+              { $inc: { "reaction.$.COUNT": 1 } }, { new: true })
+              .then(result2 => {
+                res.status(200).json({
+                  statusCode: 200,
+                  message: `you have reacted on a video`,
+                  result: result2
+                })
+              }).catch(err => {
+                res.status(401).json({
+                  statusCode: 401,
+                  message: `something going wrong please check and error is ${err}`
+                })
+              })
+          } else {
+            videoDetailsModel.findByIdAndUpdate(videoId, {
+              $push: {
+                reaction: {
+                  NAME: NAME,
+                  CODE: CODE,
+                  COUNT: COUNT,
+                  EMOOJI: EMOOJI
+                }
+              }
+            }, { new: true }).then(result3 => {
+              res.status(200).json({
+                statusCode: 200,
+                message: "you have reacted on a video",
+                result: result3
+              })
+            }).catch(err => {
+              res.status(401).json({
+                statusCode: 401,
+                message: `something going wrong please check and error is ${err}`
+              })
+            })
+          }
+        }).catch(err => {
+          res.status(401).json({
+            statusCode: 401,
+            message: `something going wrong please check and error is ${err}`
+          })
+        })
+
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `something going wrong please check and error is ${err}`
+        })
+      })
+    }
+    if (result0.length > 0 && result0[0].code != CODE && result0[0].name != NAME) {
+      reactionStatusModel.findOneAndUpdate({ userId: userId, videoId: videoId }, { code: CODE, name: NAME }).then(result4 => {
+        videoDetailsModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
+          { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
+          .then(result2 => {
+            videoDetailsModel.findByIdAndUpdate(videoId, {
+              $push: {
+                reaction: {
+                  NAME: NAME,
+                  CODE: CODE,
+                  COUNT: COUNT,
+                  EMOOJI: EMOOJI
+                }
+              }
+            }, { new: true }).then(result3 => {
+              res.status(200).json({
+                statusCode: 200,
+                message: "you have reacted on a video",
+                result: result3
+              })
+            }).catch(err => {
+              res.status(401).json({
+                statusCode: 401,
+                message: `something going wrong please check and error is ${err}`
+              })
+            })
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `something going wrong please check and error is ${err}`
+            })
+          })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `something going wrong please check and error is ${err}`
+        })
+      })
+    }
+    if (result0.length > 0 && result0[0].name === NAME && result0[0].code === CODE) {
+      res.status(200).json({
+        statusCode: 200,
+        message: "this reaction is already saved..",
+      })
+    }
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and error is ${err}`
     })
   })
 }

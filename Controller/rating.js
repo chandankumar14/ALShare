@@ -1,31 +1,28 @@
-const ratingModule = require("../Model/rating_reaction");
+const ratingModule = require("../Model/rating");
 const videoModule = require("../Model/video");
 
 exports.MarkVideoRating = async (req, res, next) => {
     const userId = req.body.userId;
     const videoId = req.body.videoId;
     const rating = req.body.rating;
-    const ratingStatus = req.body.ratingStatus;
-    const reactionType = req.body.reactionType;
     const avgRating = req.body.avgRating;
     const ratingUserCount = req.body.ratingUserCount;
     const ratingPayload = new ratingModule({
         userId: userId,
         videoId: videoId,
         rating: rating,
-        ratingStatus: ratingStatus,
-        reactionType: reactionType,
+        ratingStatus: true,
     })
-
     ratingModule.find({ userId: userId, videoId: videoId }).then(result => {
         if (result.length > 0) {
+           const calRating = (((parseFloat(avgRating) * ratingUserCount)) + (parseFloat(rating) - parseFloat(result[0].rating))) / (ratingUserCount)
             ratingModule.findOneAndUpdate({ userId: userId, videoId: videoId }, { rating: rating }).then(result1 => {
-                videoModule.findByIdAndUpdate(videoId, { avgRating: avgRating, ratingUserCount: ratingUserCount })
+                videoModule.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount },{new:true})
                     .then(result2 => {
                         res.status(200).json({
                             statusCode: 200,
                             message: `Your rating is saved successfully`,
-                            result: result1
+                            result: result2
                         })
                     }).catch(err => {
                         res.status(401).json({
@@ -42,12 +39,13 @@ exports.MarkVideoRating = async (req, res, next) => {
 
         } else {
             ratingPayload.save().then(result3 => {
-                videoModule.findByIdAndUpdate(videoId, { avgRating: avgRating, ratingUserCount: ratingUserCount })
+                const calRating = ( (parseFloat(avgRating) * ratingUserCount) + parseFloat(rating) ) / (ratingUserCount + 1)
+                videoModule.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount +1},{new:true})
                     .then(result1 => {
                         res.status(200).json({
                             statusCode: 200,
                             message: `Your rating is saved successfully`,
-                            result: result3
+                            result: result1
                         })
                     }).catch(err => {
                         res.status(401).json({
@@ -71,10 +69,7 @@ exports.MarkVideoRating = async (req, res, next) => {
         })
 
     })
-
-
 }
-
 
 exports.GetRatedvideo = async (req, res, next) => {
     const userId = req.body.userId;
