@@ -52,6 +52,20 @@ const EventVideoSchema = new schema({
         type: Number,
         default: 0
     },
+    reaction: [{
+        NAME: {
+          type: String,
+        },
+        CODE: {
+          type: String,
+        },
+        COUNT: {
+          type: Number,
+        },
+        EMOOJI: {
+          type: String,
+        }
+      }]
     
 },
     { timestamps: true });
