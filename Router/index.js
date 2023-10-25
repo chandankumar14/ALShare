@@ -11,6 +11,9 @@ const userController = require("../Controller/user");
 // ********** Following And Followers Controller *********
 const followersController = require("../Controller/follower");
 
+//********** Event controller ***** */
+const eventController = require("../Controller/event")
+
 // *********Vidoe Module **************
 Router.post(`/video_details`, videoController.PostVideoDetail);
 Router.post(`/video_details_list`, videoController.GetVideoDetails);
@@ -44,5 +47,14 @@ Router.post("/mark_video_rating",ratingController.MarkVideoRating);
 Router.post("/video_details_by_userId_and_videoId",ratingController.GetRatedvideo)
 //****************payment Integration**** */
 const paymentController = require("../Utilities/strip")
-Router.get("/payment", paymentController.createCustomer)
+Router.post("/payment", paymentController.StripePayment)
+
+//********** Event module Routing is here********* */
+
+Router.post(`/create_event`, eventController.CreateEvent);
+Router.get(`/All_event_list`,eventController.GetEventList);
+Router.post(`/event_details_by_id`,eventController.GetEventById);
+Router.post(`/join_event`,eventController.JoinEvent);
+Router.post(`/post_event_video`,eventController.PostEventVideos)
+
 module.exports = Router;

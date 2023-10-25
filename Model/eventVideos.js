@@ -13,10 +13,6 @@ const EventVideoSchema = new schema({
         type: String,
         required: true,
     },
-    tags: {
-        type: Array,
-        required: true,
-    },
     link: {
         type: String,
         required: true,
@@ -40,10 +36,6 @@ const EventVideoSchema = new schema({
         required: true,
         default: false
     },
-    likes: {
-        type: Number,
-        default: 0
-    },
     thumbnail: {
         type: String,
         required: true
@@ -60,21 +52,7 @@ const EventVideoSchema = new schema({
         type: Number,
         default: 0
     },
-    reaction: [{
-        NAME: {
-            type: String,
-        },
-        CODE: {
-            type: String
-        },
-        COUNT: {
-            type: Number,
-            default: 0
-        },
-        EMOOJI: {
-            type: String,
-        }
-    }]
+    
 },
     { timestamps: true });
 
