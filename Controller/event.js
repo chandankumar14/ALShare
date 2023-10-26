@@ -385,5 +385,22 @@ exports.GetPostAndDraftEvent = async (req, res, next) => {
             message: `somthing going wrong please check again and err is ${err}`
         })
     })
+}
 
+// *************Posting draft event *********
+
+exports.PostDraftEvent = async (req, res, next) => {
+    const eventId = req.body.eventId;
+    const eventStatus = req.body.eventStatus;
+    eventModel.findByIdAndUpdate(eventId, { eventStatus: eventStatus }).then(result => {
+        res.status(200).json({
+            statusCode: 200,
+            message: `Your Draft event is posted successfully..`,
+            result: result
+        })
+    }).catch(err => {
+        res.status(401).json({
+            message: `something going wrong please check again and err is ${err}`
+        })
+    })
 }

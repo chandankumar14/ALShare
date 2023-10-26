@@ -60,5 +60,6 @@ Router.post(`/event_video_rating`,eventController.MarkEventVideoRating);
 Router.post(`/event_video_reaction`,eventController.EventVideoReaction);
 Router.post(`/event_video_list`,eventController.GetEventVideoList);
 Router.post(`/draft_post_event_list`,eventController.GetPostAndDraftEvent);
+Router.post(`/post_draft_event`,eventController.PostDraftEvent);
 
 module.exports = Router;
