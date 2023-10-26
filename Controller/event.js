@@ -13,6 +13,7 @@ exports.CreateEvent = async (req, res, next) => {
     const startDate = req.body.startDate;
     const endDate = req.body.endDate;
     const entryFee = req.body.entryFee;
+    const eventStatus = req.body.eventStatus;
     const eventPayload = new eventModel({
         userId: userId,
         title: title,
@@ -21,7 +22,8 @@ exports.CreateEvent = async (req, res, next) => {
         award: award,
         startDate: startDate,
         endDate: endDate,
-        entryFee: entryFee
+        entryFee: entryFee,
+        eventStatus: eventStatus
     })
     eventPayload.save().then(result => {
         res.status(200).json({
@@ -371,7 +373,7 @@ exports.GetEventVideoList = async (req, res, next) => {
 exports.GetPostAndDraftEvent = async (req, res, next) => {
     const userId = req.body.userId;
     const eventStatus = req.body.eventStatus;
-    eventModel.find({ userId: userId, eventStatus: eventStatus }).then(result => {
+    eventModel.find({ userId: userId, eventStatus: eventStatus }).sort({_id:-1}).then(result => {
         res.status(200).json({
             statusCode: 200,
             message: `Event List`,
