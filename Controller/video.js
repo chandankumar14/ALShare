@@ -90,7 +90,7 @@ exports.GetVideoDetails = async (req, res, next) => {
       duration: 1,
       createdAt: 1,
       updatedAt: 1,
-      reaction:1,
+      reaction: 1,
       "videoOwner._id": 1,
       "videoOwner.Username": 1,
       "videoOwner.Email": 1,
@@ -287,27 +287,54 @@ exports.Reaction = async (req, res, next) => {
         videoDetailsModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
           { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
           .then(result2 => {
-            videoDetailsModel.findByIdAndUpdate(videoId, {
-              $push: {
-                reaction: {
-                  NAME: NAME,
-                  CODE: CODE,
-                  COUNT: 1,
-                  EMOOJI: EMOOJI
-                }
+            // checking reaction is available or not ***** 
+            videoDetailsModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result3 => {
+              if (result3.length > 0) {
+                videoDetailsModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+                  { $inc: { "reaction.$.COUNT": 1 } }, { new: true }).then(result4 => {
+                    res.status(200).json({
+                      statusCode: 200,
+                      message: `you have reacted on a video`,
+                      result: result4
+                    })
+                  }).catch(err => {
+                    res.status(401).json({
+                      statusCode: 401,
+                      message: `something going wrong please check and error is ${err}`
+                    })
+                  })
+              } else {
+                videoDetailsModel.findByIdAndUpdate(videoId, {
+                  $push: {
+                    reaction: {
+                      NAME: NAME,
+                      CODE: CODE,
+                      COUNT: 1,
+                      EMOOJI: EMOOJI
+                    }
+                  }
+                }, { new: true }).then(result5 => {
+                  res.status(200).json({
+                    statusCode: 200,
+                    message: `you have reacted on a video`,
+                    result: result5
+                  })
+
+                }).catch(err => {
+                  res.status(401).json({
+                    statusCode: 401,
+                    message: `something going wrong please check and error is ${err}`
+                  })
+                })
               }
-            }, { new: true }).then(result3 => {
-              res.status(200).json({
-                statusCode: 200,
-                message: "you have reacted on a video",
-                result: result3
-              })
             }).catch(err => {
               res.status(401).json({
                 statusCode: 401,
                 message: `something going wrong please check and error is ${err}`
               })
             })
+            // *******end here******
+
           }).catch(err => {
             res.status(401).json({
               statusCode: 401,
