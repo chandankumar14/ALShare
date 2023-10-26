@@ -226,129 +226,6 @@ exports.MarkEventVideoRating = async (req, res, next) => {
 
     })
 }
-//**************user Reaction on video ********** */
-exports.EventVideoReaction = async (req, res, next) => {
-    const videoId = req.body.videoId;
-    const userId = req.body.userId;
-    const NAME = req.body.NAME;
-    const CODE = req.body.CODE;
-    const EMOOJI = req.body.EMOOJI;
-    reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
-        if (result0.length === 0) {
-            const reactionStatusPayload = new reactionStatusModel({
-                videoId: videoId,
-                userId: userId,
-                reactionStatus: true,
-                code: CODE,
-                name: NAME
-            })
-            reactionStatusPayload.save().then(result01 => {
-                eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result1 => {
-                    if (result1.length > 0) {
-                        eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
-                            { $inc: { "reaction.$.COUNT": 1 } }, { new: true })
-                            .then(result2 => {
-                                res.status(200).json({
-                                    statusCode: 200,
-                                    message: `you have reacted on a video`,
-                                    result: result2
-                                })
-                            }).catch(err => {
-                                res.status(401).json({
-                                    statusCode: 401,
-                                    message: `something going wrong please check and error is ${err}`
-                                })
-                            })
-                    } else {
-                        eventVideoModel.findByIdAndUpdate(videoId, {
-                            $push: {
-                                reaction: {
-                                    NAME: NAME,
-                                    CODE: CODE,
-                                    COUNT: 1,
-                                    EMOOJI: EMOOJI
-                                }
-                            }
-                        }, { new: true }).then(result3 => {
-                            res.status(200).json({
-                                statusCode: 200,
-                                message: "you have reacted on a video",
-                                result: result3
-                            })
-                        }).catch(err => {
-                            res.status(401).json({
-                                statusCode: 401,
-                                message: `something going wrong please check and error is ${err}`
-                            })
-                        })
-                    }
-                }).catch(err => {
-                    res.status(401).json({
-                        statusCode: 401,
-                        message: `something going wrong please check and error is ${err}`
-                    })
-                })
-
-            }).catch(err => {
-                res.status(401).json({
-                    statusCode: 401,
-                    message: `something going wrong please check and error is ${err}`
-                })
-            })
-        }
-        if (result0.length > 0 && result0[0].code != CODE && result0[0].name != NAME) {
-            reactionStatusModel.findOneAndUpdate({ userId: userId, videoId: videoId }, { code: CODE, name: NAME }).then(result4 => {
-                eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
-                    { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
-                    .then(result2 => {
-                        eventVideoModel.findByIdAndUpdate(videoId, {
-                            $push: {
-                                reaction: {
-                                    NAME: NAME,
-                                    CODE: CODE,
-                                    COUNT: 1,
-                                    EMOOJI: EMOOJI
-                                }
-                            }
-                        }, { new: true }).then(result3 => {
-                            res.status(200).json({
-                                statusCode: 200,
-                                message: "you have reacted on a video",
-                                result: result3
-                            })
-                        }).catch(err => {
-                            res.status(401).json({
-                                statusCode: 401,
-                                message: `something going wrong please check and error is ${err}`
-                            })
-                        })
-                    }).catch(err => {
-                        res.status(401).json({
-                            statusCode: 401,
-                            message: `something going wrong please check and error is ${err}`
-                        })
-                    })
-            }).catch(err => {
-                res.status(401).json({
-                    statusCode: 401,
-                    message: `something going wrong please check and error is ${err}`
-                })
-            })
-        }
-        if (result0.length > 0 && result0[0].name === NAME && result0[0].code === CODE) {
-            res.status(200).json({
-                statusCode: 200,
-                message: "this reaction is already saved..",
-            })
-        }
-    }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and error is ${err}`
-        })
-    })
-}
-
 // *********All event Video list************
 exports.GetEventVideoList = async (req, res, next) => {
     const eventId = req.body.eventId;
@@ -403,4 +280,155 @@ exports.PostDraftEvent = async (req, res, next) => {
             message: `something going wrong please check again and err is ${err}`
         })
     })
+}
+
+//**************user Reaction on video ********** */
+exports.EventVideoReaction = async (req, res, next) => {
+    const videoId = req.body.videoId;
+    const userId = req.body.userId;
+    const NAME = req.body.NAME;
+    const CODE = req.body.CODE;
+    const EMOOJI = req.body.EMOOJI;
+    reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
+      if (result0.length === 0) {
+        const reactionStatusPayload = new reactionStatusModel({
+          videoId: videoId,
+          userId: userId,
+          reactionStatus: true,
+          code: CODE,
+          name: NAME
+        })
+        reactionStatusPayload.save().then(result01 => {
+          eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result1 => {
+            if (result1.length > 0) {
+              eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+                { $inc: { "reaction.$.COUNT": 1 } }, { new: true })
+                .then(result2 => {
+                  res.status(200).json({
+                    statusCode: 200,
+                    message: `you have reacted on a video`,
+                    result: result2
+                  })
+                }).catch(err => {
+                  res.status(401).json({
+                    statusCode: 401,
+                    message: `something going wrong please check and error is ${err}`
+                  })
+                })
+            } else {
+              eventVideoModel.findByIdAndUpdate(videoId, {
+                $push: {
+                  reaction: {
+                    NAME: NAME,
+                    CODE: CODE,
+                    COUNT: 1,
+                    EMOOJI: EMOOJI
+                  }
+                }
+              }, { new: true }).then(result3 => {
+                res.status(200).json({
+                  statusCode: 200,
+                  message: "you have reacted on a video",
+                  result: result3
+                })
+              }).catch(err => {
+                res.status(401).json({
+                  statusCode: 401,
+                  message: `something going wrong please check and error is ${err}`
+                })
+              })
+            }
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `something going wrong please check and error is ${err}`
+            })
+          })
+  
+        }).catch(err => {
+          res.status(401).json({
+            statusCode: 401,
+            message: `something going wrong please check and error is ${err}`
+          })
+        })
+      }
+      if (result0.length > 0 && result0[0].code != CODE && result0[0].name != NAME) {
+        reactionStatusModel.findOneAndUpdate({ userId: userId, videoId: videoId }, { code: CODE, name: NAME }).then(result4 => {
+          eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
+            { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
+            .then(result2 => {
+              // checking reaction is available or not ***** 
+              eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result3 => {
+                if (result3.length > 0) {
+                  eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+                    { $inc: { "reaction.$.COUNT": 1 } }, { new: true }).then(result4 => {
+                      res.status(200).json({
+                        statusCode: 200,
+                        message: `you have reacted on a video`,
+                        result: result4
+                      })
+                    }).catch(err => {
+                      res.status(401).json({
+                        statusCode: 401,
+                        message: `something going wrong please check and error is ${err}`
+                      })
+                    })
+                } else {
+                  eventVideoModel.findByIdAndUpdate(videoId, {
+                    $push: {
+                      reaction: {
+                        NAME: NAME,
+                        CODE: CODE,
+                        COUNT: 1,
+                        EMOOJI: EMOOJI
+                      }
+                    }
+                  }, { new: true }).then(result5 => {
+                    res.status(200).json({
+                      statusCode: 200,
+                      message: `you have reacted on a video`,
+                      result: result5
+                    })
+  
+                  }).catch(err => {
+                    res.status(401).json({
+                      statusCode: 401,
+                      message: `something going wrong please check and error is ${err}`
+                    })
+                  })
+                }
+              }).catch(err => {
+                res.status(401).json({
+                  statusCode: 401,
+                  message: `something going wrong please check and error is ${err}`
+                })
+              })
+              // *******end here******
+  
+            }).catch(err => {
+              res.status(401).json({
+                statusCode: 401,
+                message: `something going wrong please check and error is ${err}`
+              })
+            })
+        }).catch(err => {
+          res.status(401).json({
+            statusCode: 401,
+            message: `something going wrong please check and error is ${err}`
+          })
+        })
+      }
+      if (result0.length > 0 && result0[0].name === NAME && result0[0].code === CODE) {
+        res.status(200).json({
+          statusCode: 200,
+          message: "this reaction is already saved..",
+        })
+      }
+    }).catch(err => {
+      res.status(401).json({
+        statusCode: 401,
+        message: `something going wrong please check and error is ${err}`
+      })
+    })
+  
 }
