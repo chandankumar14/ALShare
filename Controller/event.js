@@ -365,3 +365,23 @@ exports.GetEventVideoList = async (req, res, next) => {
             })
         })
 }
+
+//************* Get  draft and post  Event List *********** */
+
+exports.GetPostAndDraftEvent = async (req, res, next) => {
+    const userId = req.body.userId;
+    const eventStatus = req.body.eventStatus;
+    eventModel.find({ userId: userId, eventStatus: eventStatus }).then(result => {
+        res.status(200).json({
+            statusCode: 200,
+            message: `Event List`,
+            result: result
+        })
+    }).catch(err => {
+        res.status(401).json({
+            statusCode: 401,
+            message: `somthing going wrong please check again and err is ${err}`
+        })
+    })
+
+}

@@ -36,8 +36,13 @@ const EventSchema = new Schema({
     entryFee:{
         type:String,
         default:"00.00"
+    },
+    eventStatus: {
+        type: Boolean,
+        default: false
     }
-})
+},
+    { timestamps: true })
 
 
 module.exports = mongoose.model("events", EventSchema)
