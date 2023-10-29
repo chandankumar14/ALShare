@@ -3,6 +3,8 @@ const eventVideoModel = require("../Model/eventVideos");
 const participantsModel = require("../Model/participants");
 const reactionStatusModel = require("../Model/reactionStatus");
 const ratingModule = require("../Model/rating");
+const followersModel = require("../Model/followers")
+const moment = require("moment")
 //************** create new Event******** */
 exports.CreateEvent = async (req, res, next) => {
     const userId = req.body.userId;
@@ -40,22 +42,6 @@ exports.CreateEvent = async (req, res, next) => {
     })
 
 }
-
-//********** Fetch All Event list ********* */
-exports.GetEventList = async (req, res, next) => {
-    eventModel.find().then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `All event List Fetch SuccessFully..`,
-            result: result
-        })
-    }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and err msg is ${err}`
-        })
-    })
-}
 //****** Fetch Event Details by eventId ********/
 exports.GetEventById = async (req, res, next) => {
     const _id = req.body._id
@@ -75,211 +61,239 @@ exports.GetEventById = async (req, res, next) => {
 //************ Join Event ********* */
 
 exports.JoinEvent = async (req, res, next) => {
-    const eventId = req.body.eventId;
-    const userId = req.body.userId;
-    const paymentStatus = req.body.paymentStatus;
-    const transId = req.body.transId;
-    participantsPayLoad = new participantsModel({
-        eventId: eventId,
-        userId: userId,
-        paymentStatus: paymentStatus,
-        transId: transId
-    })
-    participantsPayLoad.save().then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `you have joined event SuccessFully..`,
-            result: result
-        })
+  const eventId = req.body.eventId;
+  const userId = req.body.userId;
+  const paymentStatus = req.body.paymentStatus;
+  const transId = req.body.transId;
+  participantsPayLoad = new participantsModel({
+    eventId: eventId,
+    userId: userId,
+    paymentStatus: paymentStatus,
+    transId: transId
+  })
+  participantsPayLoad.save().then(result => {
+    eventModel.findByIdAndUpdate(eventId, {
+      $push: {
+        participants: {
+          participantId: userId
+        }
+      }
+    }).then(participants => {
+      res.status(200).json({
+        statusCode: 200,
+        message: `you have joined event SuccessFully..`,
+        result: result
+      })
     }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and err msg is ${err}`
-        })
+      res.status(401).json({
+        statusCode: 401,
+        message: `something going wrong please check and err msg is ${err}`
+      })
     })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and err msg is ${err}`
+    })
+  })
 }
 
 //**************** Posting Event Video********/
 exports.PostEventVideos = async (req, res, next) => {
-    const eventId = req.body.eventId;
-    const title = req.body.title;
-    const description = req.body.description;
-    const link = req.body.link;
-    const videoType = req.body.videoType;
-    const videoSource = req.body.videoSource;
-    const userId = req.body.userId;
-    const videoStatus = req.body.videoStatus;
-    const thumbnail = req.body.thumbnail;
-    const duration = req.body.duration;
-    const avgRating = req.body.avgRating;
-    const ratingUserCount = req.body.ratingUserCount;
-    const EventVideoPayload = new eventVideoModel({
-        eventId: eventId,
-        title: title,
-        description: description,
-        link: link,
-        videoType: videoType,
-        videoSource: videoSource,
-        userIdL: userId,
-        videoStatus: videoStatus,
-        thumbnail: thumbnail,
-        duration: duration,
-        avgRating: avgRating,
-        ratingUserCount: ratingUserCount
-    })
-    // ****** Checking the participant Status ***** // 
-    participantsModel.find({ userId: userId }).then(result => {
-        if (result.length > 0) {
-            EventVideoPayload.save().then(result1 => {
-                res.status(200).json({
-                    statusCode: 200,
-                    message: `Your video is postd Successfully..`,
-                    result: result1
-                })
-            }).catch(err => {
-                res.status(401).json({
-                    statusCode: 401,
-                    message: `Something going wrong please check again and err msg is ${err}`
-                })
-            })
-        } else {
+  const eventId = req.body.eventId;
+  const title = req.body.title;
+  const description = req.body.description;
+  const link = req.body.link;
+  const videoType = req.body.videoType;
+  const videoSource = req.body.videoSource;
+  const userId = req.body.userId;
+  const videoStatus = req.body.videoStatus;
+  const thumbnail = req.body.thumbnail;
+  const duration = req.body.duration;
+  const avgRating = req.body.avgRating;
+  const ratingUserCount = req.body.ratingUserCount;
+  const EventVideoPayload = new eventVideoModel({
+    eventId: eventId,
+    title: title,
+    description: description,
+    link: link,
+    videoType: videoType,
+    videoSource: videoSource,
+    userId: userId,
+    videoStatus: videoStatus,
+    thumbnail: thumbnail,
+    duration: duration,
+    avgRating: avgRating,
+    ratingUserCount: ratingUserCount
+  })
+  // ****** Checking the participant Status ***** // 
+  participantsModel.find({ userId: userId }).then(result => {
+    if (result.length > 0) {
+      eventVideoModel.find({userId:userId,eventId:eventId}).then(result0=>{
+        if (result0.length > 0) {
+          res.status(200).json({
+            statusCode: 200,
+            message: `Sorry you can't post more than one video..`,
+          })
+        }else{
+          EventVideoPayload.save().then(result1 => {
             res.status(200).json({
-                statusCode: 200,
-                message: `please join the event first...`
+              statusCode: 200,
+              message: `Your video is postd Successfully..`,
+              result: result1
             })
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `Something going wrong please check again and err msg is ${err}`
+            })
+          })
         }
-    }).catch(err => {
+
+      }).catch(err=>{
         res.status(401).json({
-            statusCode: 401,
-            message: `Something going wrong please check again and err msg is ${err}`
+          statusCode: 401,
+          message: `Something going wrong please check again and err msg is ${err}`
         })
+      })
+    } else {
+      res.status(200).json({
+        statusCode: 200,
+        message: `please join the event first...`
+      })
+    }
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `Something going wrong please check again and err msg is ${err}`
     })
+  })
 }
 
 //*************Event Video rating ************ */
 exports.MarkEventVideoRating = async (req, res, next) => {
-    const userId = req.body.userId;
-    const videoId = req.body.videoId;
-    const rating = req.body.rating;
-    const avgRating = req.body.avgRating;
-    const ratingUserCount = req.body.ratingUserCount;
-    const ratingPayload = new ratingModule({
-        userId: userId,
-        videoId: videoId,
-        rating: rating,
-        ratingStatus: true,
-    })
-    ratingModule.find({ userId: userId, videoId: videoId }).then(result => {
-        if (result.length > 0) {
-            const calRating = (((parseFloat(avgRating) * ratingUserCount)) + (parseFloat(rating) - parseFloat(result[0].rating))) / (ratingUserCount)
-            ratingModule.findOneAndUpdate({ userId: userId, videoId: videoId }, { rating: rating }).then(result1 => {
-                eventVideoModel.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount }, { new: true })
-                    .then(result2 => {
-                        res.status(200).json({
-                            statusCode: 200,
-                            message: `Your rating is saved successfully`,
-                            result: result2
-                        })
-                    }).catch(err => {
-                        res.status(401).json({
-                            statusCode: 401,
-                            message: `somthing going wrong please check and err_message is ${err}`
-                        })
-                    })
-            }).catch(err => {
-                res.status(401).json({
-                    statusCode: 401,
-                    message: `somthing going wrong please check and err_message is ${err}`
-                })
+  const userId = req.body.userId;
+  const videoId = req.body.videoId;
+  const rating = req.body.rating;
+  const avgRating = req.body.avgRating;
+  const ratingUserCount = req.body.ratingUserCount;
+  const ratingPayload = new ratingModule({
+    userId: userId,
+    videoId: videoId,
+    rating: rating,
+    ratingStatus: true,
+  })
+  ratingModule.find({ userId: userId, videoId: videoId }).then(result => {
+    if (result.length > 0) {
+      const calRating = (((parseFloat(avgRating) * ratingUserCount)) + (parseFloat(rating) - parseFloat(result[0].rating))) / (ratingUserCount)
+      ratingModule.findOneAndUpdate({ userId: userId, videoId: videoId }, { rating: rating }).then(result1 => {
+        eventVideoModel.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount }, { new: true })
+          .then(result2 => {
+            res.status(200).json({
+              statusCode: 200,
+              message: `Your rating is saved successfully`,
+              result: result2
             })
-
-        } else {
-            ratingPayload.save().then(result3 => {
-                const calRating = ((parseFloat(avgRating) * ratingUserCount) + parseFloat(rating)) / (ratingUserCount + 1)
-                eventVideoModel.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount + 1 }, { new: true })
-                    .then(result1 => {
-                        res.status(200).json({
-                            statusCode: 200,
-                            message: `Your rating is saved successfully`,
-                            result: result1
-                        })
-                    }).catch(err => {
-                        res.status(401).json({
-                            statusCode: 401,
-                            message: `somthing going wrong please check and err_message is ${err}`
-                        })
-                    })
-            }).catch(err => {
-                res.status(401).json({
-                    statusCode: 401,
-                    message: `somthing going wrong please check and err_message is ${err}`
-                })
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `somthing going wrong please check and err_message is ${err}`
             })
-
-        }
-
-    }).catch(err => {
+          })
+      }).catch(err => {
         res.status(401).json({
-            statusCode: 401,
-            message: `somthing going wrong please check and err_message is ${err}`
+          statusCode: 401,
+          message: `somthing going wrong please check and err_message is ${err}`
         })
+      })
 
+    } else {
+      ratingPayload.save().then(result3 => {
+        const calRating = ((parseFloat(avgRating) * ratingUserCount) + parseFloat(rating)) / (ratingUserCount + 1)
+        eventVideoModel.findByIdAndUpdate(videoId, { avgRating: calRating, ratingUserCount: ratingUserCount + 1 }, { new: true })
+          .then(result1 => {
+            res.status(200).json({
+              statusCode: 200,
+              message: `Your rating is saved successfully`,
+              result: result1
+            })
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `somthing going wrong please check and err_message is ${err}`
+            })
+          })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `somthing going wrong please check and err_message is ${err}`
+        })
+      })
+
+    }
+
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somthing going wrong please check and err_message is ${err}`
     })
+
+  })
 }
 // *********All event Video list************
 exports.GetEventVideoList = async (req, res, next) => {
-    const eventId = req.body.eventId;
-    eventVideoModel.find({ eventId: eventId }).sort({ avgRating: -1 })
-        .then(result => {
-            res.status(200).json({
-                statusCode: 200,
-                message: `Event Video List Fetch Successsfully`,
-                result: result
-            })
-        })
-        .catch(err => {
-            res.status(401).json({
-                statusCode: 401,
-                message: `something going wrong please check and error is ${err}`
-            })
-        })
+  const eventId = req.body.eventId;
+  eventVideoModel.find({ eventId: eventId }).sort({ avgRating: -1 })
+    .then(result => {
+      res.status(200).json({
+        statusCode: 200,
+        message: `Event Video List Fetch Successsfully`,
+        result: result
+      })
+    })
+    .catch(err => {
+      res.status(401).json({
+        statusCode: 401,
+        message: `something going wrong please check and error is ${err}`
+      })
+    })
 }
 
 //************* Get  draft and post  Event List *********** */
 
 exports.GetPostAndDraftEvent = async (req, res, next) => {
-    const userId = req.body.userId;
-    const eventStatus = req.body.eventStatus;
-    eventModel.find({ userId: userId, eventStatus: eventStatus }).sort({_id:-1}).then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `Event List`,
-            result: result
-        })
-    }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `somthing going wrong please check again and err is ${err}`
-        })
+  const userId = req.body.userId;
+  const eventStatus = req.body.eventStatus;
+  eventModel.find({ userId: userId, eventStatus: eventStatus }).sort({ _id: -1 }).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `Event List`,
+      result: result
     })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `somthing going wrong please check again and err is ${err}`
+    })
+  })
 }
 
 // *************Posting draft event *********
 
 exports.PostDraftEvent = async (req, res, next) => {
-    const eventId = req.body.eventId;
-    const eventStatus = req.body.eventStatus;
-    eventModel.findByIdAndUpdate(eventId, { eventStatus: eventStatus }).then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `Your Draft event is posted successfully..`,
-            result: result
-        })
-    }).catch(err => {
-        res.status(401).json({
-            message: `something going wrong please check again and err is ${err}`
-        })
+  const eventId = req.body.eventId;
+  const eventStatus = req.body.eventStatus;
+  eventModel.findByIdAndUpdate(eventId, { eventStatus: eventStatus }).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `Your Draft event is posted successfully..`,
+      result: result
     })
+  }).catch(err => {
+    res.status(401).json({
+      message: `something going wrong please check again and err is ${err}`
+    })
+  })
 }
 
 //**************user Reaction on video ********** */
@@ -431,4 +445,69 @@ exports.EventVideoReaction = async (req, res, next) => {
       })
     })
   
+}
+
+// *************** ALL Event List ************* 
+exports.GetEventList = async (req, res, next) => {
+  const loginUserId = "652551503cbf899185e4a367"
+  const Today_Date = moment().format();
+  var resultlength;
+  eventModel.find({ endDate: { $gte: Today_Date }, eventStatus: true })
+    .populate("participants.participantId", `-password -otpVerification -deviceId`)
+    .then(result => {
+      // cheking followers details ******
+      resultlength = result.length
+      res.status(200).json({
+        statusCode: 200,
+        message: `Event details list`,
+        result: result
+      })
+    }).catch(err => {
+      res.status(401).json({
+        statusCode: 401,
+        message: `something going wrong please check and error is ${err}`
+      })
+    })
+}
+
+//***********Replace Event video by participants******** */
+exports.ReplaceEventVideo = async(req,res,next)=>{
+  const eventId = req.body.eventId;
+  const title = req.body.title;
+  const description = req.body.description;
+  const link = req.body.link;
+  const videoType = req.body.videoType;
+  const videoSource = req.body.videoSource;
+  const userId = req.body.userId;
+  const videoStatus = req.body.videoStatus;
+  const thumbnail = req.body.thumbnail;
+  const duration = req.body.duration;
+  const avgRating = "0.00";
+  const ratingUserCount = 0;
+  const payload = {
+    eventId: eventId,
+    title: title,
+    description: description,
+    link: link,
+    videoType: videoType,
+    videoSource: videoSource,
+    userId: userId,
+    videoStatus: videoStatus,
+    thumbnail: thumbnail,
+    duration: duration,
+    avgRating: avgRating,
+    ratingUserCount: ratingUserCount
+  }
+  eventVideoModel.findOneAndUpdate({ userId: userId, eventId: eventId }, payload).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `event vidoe is updated`,
+      result: result
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something wrong please check again and err is ${err}`
+    })
+  })
 }

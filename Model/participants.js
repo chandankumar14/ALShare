@@ -14,8 +14,8 @@ const participantSchema = new Schema({
         default: false
     },
     transId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "payments"
+        type: String,
+       
     }
 })
 
