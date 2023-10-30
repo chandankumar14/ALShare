@@ -453,6 +453,7 @@ exports.GetEventList = async (req, res, next) => {
   const Today_Date = moment().format();
   var resultlength;
   eventModel.find({ endDate: { $gte: Today_Date }, eventStatus: true })
+    .populate("userId",`-password -otpVerification -deviceId`)
     .populate("participants.participantId", `-password -otpVerification -deviceId`)
     .then(result => {
       // cheking followers details ******
