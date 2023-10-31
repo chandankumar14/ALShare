@@ -45,6 +45,10 @@ const EventSchema = new Schema({
         participantId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "users"
+        },
+        videoPostStaus: {
+            type: Boolean,
+            default: false
         }
     }]
 },

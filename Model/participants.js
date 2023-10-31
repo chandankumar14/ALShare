@@ -16,10 +16,7 @@ const participantSchema = new Schema({
     transId: {
         type: String,
     },
-    videoPostStatus: {
-        type: Boolean,
-        default: false
-    }
+   
 })
 
 module.exports = mongoose.model("participants", participantSchema)

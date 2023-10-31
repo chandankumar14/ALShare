@@ -75,7 +75,8 @@ exports.JoinEvent = async (req, res, next) => {
     eventModel.findByIdAndUpdate(eventId, {
       $push: {
         participants: {
-          participantId: userId
+          participantId: userId,
+          videoPostStaus: false
         }
       }
     }).then(participants => {
@@ -137,7 +138,8 @@ exports.PostEventVideos = async (req, res, next) => {
           })
         } else {
           EventVideoPayload.save().then(async result1 => {
-            const updateStatus = await participantsModel.findByIdAndUpdate({ userId: userId, eventId: eventId }, { videoPostStatus: true });
+            const updateStatus = await eventModel.findOneAndUpdate({ _id: eventId, participants: { $elemMatch: { participantId: userId } } },
+              { $set: { "participants.$.videoPostStaus": true } })
             res.status(200).json({
               statusCode: 200,
               message: `Your video is postd Successfully..`,
@@ -450,14 +452,11 @@ exports.EventVideoReaction = async (req, res, next) => {
 
 // *************** ALL Event List ************* 
 exports.GetEventList = async (req, res, next) => {
-  const loginUserId = "652551503cbf899185e4a367"
   const Today_Date = moment().format();
   eventModel.find({ endDate: { $gte: Today_Date }, eventStatus: true })
     .populate("userId", `-password -otpVerification -deviceId`)
     .populate("participants.participantId", `-password -otpVerification -deviceId`)
     .then(result => {
-      const publicEventList = result.filter(item => item.inviteTo === true || (item.userId._id === loginUserId && item.inviteTo === false));
-      var followersEventList = result.filter(item => item.inviteTo === false && item.userId._id != loginUserId);
       res.status(200).json({
         statusCode: 200,
         message: `Event details list`,
@@ -469,6 +468,7 @@ exports.GetEventList = async (req, res, next) => {
         message: `something going wrong please check and error is ${err}`
       })
     })
+ 
 }
 
 //***********Replace Event video by participants******** */
