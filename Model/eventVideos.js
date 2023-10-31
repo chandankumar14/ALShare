@@ -9,6 +9,7 @@ const EventVideoSchema = new schema({
         type: String,
         required: true,
     },
+    
     description: {
         type: String,
         required: true,
@@ -65,7 +66,11 @@ const EventVideoSchema = new schema({
         EMOOJI: {
           type: String,
         }
-      }]
+      }],
+      tags: {
+        type: Array,
+        required: true,
+      },
     
 },
     { timestamps: true });

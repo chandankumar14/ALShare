@@ -52,6 +52,7 @@ const EventSchema = new Schema({
         }
     }]
 },
+{timestamps:true}
  )
 
 

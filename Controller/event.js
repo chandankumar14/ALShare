@@ -113,6 +113,7 @@ exports.PostEventVideos = async (req, res, next) => {
   const duration = req.body.duration;
   const avgRating = req.body.avgRating;
   const ratingUserCount = req.body.ratingUserCount;
+  const tags = req.body.tags;
   const EventVideoPayload = new eventVideoModel({
     eventId: eventId,
     title: title,
@@ -125,7 +126,8 @@ exports.PostEventVideos = async (req, res, next) => {
     thumbnail: thumbnail,
     duration: duration,
     avgRating: avgRating,
-    ratingUserCount: ratingUserCount
+    ratingUserCount: ratingUserCount,
+    tags:tags
   })
   // ****** Checking the participant Status ***** // 
   participantsModel.find({ userId: userId }).then(result => {
@@ -485,6 +487,7 @@ exports.ReplaceEventVideo = async (req, res, next) => {
   const duration = req.body.duration;
   const avgRating = "0.00";
   const ratingUserCount = 0;
+  const tags = req.body.tags;
   const payload = {
     eventId: eventId,
     title: title,
@@ -497,7 +500,8 @@ exports.ReplaceEventVideo = async (req, res, next) => {
     thumbnail: thumbnail,
     duration: duration,
     avgRating: avgRating,
-    ratingUserCount: ratingUserCount
+    ratingUserCount: ratingUserCount,
+    tags:tags
   }
   eventVideoModel.findOneAndUpdate({ userId: userId, eventId: eventId }, payload).then(result => {
     res.status(200).json({
