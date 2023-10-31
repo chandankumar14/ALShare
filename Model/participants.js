@@ -15,7 +15,10 @@ const participantSchema = new Schema({
     },
     transId: {
         type: String,
-       
+    },
+    videoPostStatus: {
+        type: Boolean,
+        default: false
     }
 })
 

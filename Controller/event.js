@@ -7,56 +7,56 @@ const followersModel = require("../Model/followers")
 const moment = require("moment")
 //************** create new Event******** */
 exports.CreateEvent = async (req, res, next) => {
-    const userId = req.body.userId;
-    const title = req.body.title;
-    const description = req.body.description;
-    const inviteTo = req.body.inviteTo;
-    const award = req.body.award;
-    const startDate = req.body.startDate;
-    const endDate = req.body.endDate;
-    const entryFee = req.body.entryFee;
-    const eventStatus = req.body.eventStatus;
-    const eventPayload = new eventModel({
-        userId: userId,
-        title: title,
-        description: description,
-        inviteTo: inviteTo,
-        award: award,
-        startDate: startDate,
-        endDate: endDate,
-        entryFee: entryFee,
-        eventStatus: eventStatus
+  const userId = req.body.userId;
+  const title = req.body.title;
+  const description = req.body.description;
+  const inviteTo = req.body.inviteTo;
+  const award = req.body.award;
+  const startDate = req.body.startDate;
+  const endDate = req.body.endDate;
+  const entryFee = req.body.entryFee;
+  const eventStatus = req.body.eventStatus;
+  const eventPayload = new eventModel({
+    userId: userId,
+    title: title,
+    description: description,
+    inviteTo: inviteTo,
+    award: award,
+    startDate: startDate,
+    endDate: endDate,
+    entryFee: entryFee,
+    eventStatus: eventStatus
+  })
+  eventPayload.save().then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `Event is created successfully ...`,
+      result: result
     })
-    eventPayload.save().then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `Event is created successfully ...`,
-            result: result
-        })
 
-    }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and err msg is ${err}`
-        })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and err msg is ${err}`
     })
+  })
 
 }
 //****** Fetch Event Details by eventId ********/
 exports.GetEventById = async (req, res, next) => {
-    const _id = req.body._id
-    eventModel.findById(_id).then(result => {
-        res.status(200).json({
-            statusCode: 200,
-            message: `Event details  Fetch SuccessFully..`,
-            result: result
-        })
-    }).catch(err => {
-        res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and err msg is ${err}`
-        })
+  const _id = req.body._id
+  eventModel.findById(_id).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: `Event details  Fetch SuccessFully..`,
+      result: result
     })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and err msg is ${err}`
+    })
+  })
 }
 //************ Join Event ********* */
 
@@ -129,14 +129,15 @@ exports.PostEventVideos = async (req, res, next) => {
   // ****** Checking the participant Status ***** // 
   participantsModel.find({ userId: userId }).then(result => {
     if (result.length > 0) {
-      eventVideoModel.find({userId:userId,eventId:eventId}).then(result0=>{
+      eventVideoModel.find({ userId: userId, eventId: eventId }).then(result0 => {
         if (result0.length > 0) {
           res.status(200).json({
             statusCode: 200,
             message: `Sorry you can't post more than one video..`,
           })
-        }else{
-          EventVideoPayload.save().then(result1 => {
+        } else {
+          EventVideoPayload.save().then(async result1 => {
+            const updateStatus = await participantsModel.findByIdAndUpdate({ userId: userId, eventId: eventId }, { videoPostStatus: true });
             res.status(200).json({
               statusCode: 200,
               message: `Your video is postd Successfully..`,
@@ -150,7 +151,7 @@ exports.PostEventVideos = async (req, res, next) => {
           })
         }
 
-      }).catch(err=>{
+      }).catch(err => {
         res.status(401).json({
           statusCode: 401,
           message: `Something going wrong please check again and err msg is ${err}`
@@ -298,52 +299,30 @@ exports.PostDraftEvent = async (req, res, next) => {
 
 //**************user Reaction on video ********** */
 exports.EventVideoReaction = async (req, res, next) => {
-    const videoId = req.body.videoId;
-    const userId = req.body.userId;
-    const NAME = req.body.NAME;
-    const CODE = req.body.CODE;
-    const EMOOJI = req.body.EMOOJI;
-    reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
-      if (result0.length === 0) {
-        const reactionStatusPayload = new reactionStatusModel({
-          videoId: videoId,
-          userId: userId,
-          reactionStatus: true,
-          code: CODE,
-          name: NAME
-        })
-        reactionStatusPayload.save().then(result01 => {
-          eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result1 => {
-            if (result1.length > 0) {
-              eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
-                { $inc: { "reaction.$.COUNT": 1 } }, { new: true })
-                .then(result2 => {
-                  res.status(200).json({
-                    statusCode: 200,
-                    message: `you have reacted on a video`,
-                    result: result2
-                  })
-                }).catch(err => {
-                  res.status(401).json({
-                    statusCode: 401,
-                    message: `something going wrong please check and error is ${err}`
-                  })
-                })
-            } else {
-              eventVideoModel.findByIdAndUpdate(videoId, {
-                $push: {
-                  reaction: {
-                    NAME: NAME,
-                    CODE: CODE,
-                    COUNT: 1,
-                    EMOOJI: EMOOJI
-                  }
-                }
-              }, { new: true }).then(result3 => {
+  const videoId = req.body.videoId;
+  const userId = req.body.userId;
+  const NAME = req.body.NAME;
+  const CODE = req.body.CODE;
+  const EMOOJI = req.body.EMOOJI;
+  reactionStatusModel.find({ userId: userId, videoId: videoId }).then(result0 => {
+    if (result0.length === 0) {
+      const reactionStatusPayload = new reactionStatusModel({
+        videoId: videoId,
+        userId: userId,
+        reactionStatus: true,
+        code: CODE,
+        name: NAME
+      })
+      reactionStatusPayload.save().then(result01 => {
+        eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result1 => {
+          if (result1.length > 0) {
+            eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+              { $inc: { "reaction.$.COUNT": 1 } }, { new: true })
+              .then(result2 => {
                 res.status(200).json({
                   statusCode: 200,
-                  message: "you have reacted on a video",
-                  result: result3
+                  message: `you have reacted on a video`,
+                  result: result2
                 })
               }).catch(err => {
                 res.status(401).json({
@@ -351,113 +330,134 @@ exports.EventVideoReaction = async (req, res, next) => {
                   message: `something going wrong please check and error is ${err}`
                 })
               })
-            }
-          }).catch(err => {
-            res.status(401).json({
-              statusCode: 401,
-              message: `something going wrong please check and error is ${err}`
-            })
-          })
-  
-        }).catch(err => {
-          res.status(401).json({
-            statusCode: 401,
-            message: `something going wrong please check and error is ${err}`
-          })
-        })
-      }
-      if (result0.length > 0 && result0[0].code != CODE && result0[0].name != NAME) {
-        reactionStatusModel.findOneAndUpdate({ userId: userId, videoId: videoId }, { code: CODE, name: NAME }).then(result4 => {
-          eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
-            { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
-            .then(result2 => {
-              // checking reaction is available or not ***** 
-              eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result3 => {
-                if (result3.length > 0) {
-                  eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
-                    { $inc: { "reaction.$.COUNT": 1 } }, { new: true }).then(result4 => {
-                      res.status(200).json({
-                        statusCode: 200,
-                        message: `you have reacted on a video`,
-                        result: result4
-                      })
-                    }).catch(err => {
-                      res.status(401).json({
-                        statusCode: 401,
-                        message: `something going wrong please check and error is ${err}`
-                      })
-                    })
-                } else {
-                  eventVideoModel.findByIdAndUpdate(videoId, {
-                    $push: {
-                      reaction: {
-                        NAME: NAME,
-                        CODE: CODE,
-                        COUNT: 1,
-                        EMOOJI: EMOOJI
-                      }
-                    }
-                  }, { new: true }).then(result5 => {
-                    res.status(200).json({
-                      statusCode: 200,
-                      message: `you have reacted on a video`,
-                      result: result5
-                    })
-  
-                  }).catch(err => {
-                    res.status(401).json({
-                      statusCode: 401,
-                      message: `something going wrong please check and error is ${err}`
-                    })
-                  })
+          } else {
+            eventVideoModel.findByIdAndUpdate(videoId, {
+              $push: {
+                reaction: {
+                  NAME: NAME,
+                  CODE: CODE,
+                  COUNT: 1,
+                  EMOOJI: EMOOJI
                 }
-              }).catch(err => {
-                res.status(401).json({
-                  statusCode: 401,
-                  message: `something going wrong please check and error is ${err}`
-                })
+              }
+            }, { new: true }).then(result3 => {
+              res.status(200).json({
+                statusCode: 200,
+                message: "you have reacted on a video",
+                result: result3
               })
-              // *******end here******
-  
             }).catch(err => {
               res.status(401).json({
                 statusCode: 401,
                 message: `something going wrong please check and error is ${err}`
               })
             })
+          }
         }).catch(err => {
           res.status(401).json({
             statusCode: 401,
             message: `something going wrong please check and error is ${err}`
           })
         })
-      }
-      if (result0.length > 0 && result0[0].name === NAME && result0[0].code === CODE) {
-        res.status(200).json({
-          statusCode: 200,
-          message: "this reaction is already saved..",
+
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `something going wrong please check and error is ${err}`
         })
-      }
-    }).catch(err => {
-      res.status(401).json({
-        statusCode: 401,
-        message: `something going wrong please check and error is ${err}`
       })
+    }
+    if (result0.length > 0 && result0[0].code != CODE && result0[0].name != NAME) {
+      reactionStatusModel.findOneAndUpdate({ userId: userId, videoId: videoId }, { code: CODE, name: NAME }).then(result4 => {
+        eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: result0[0].name, CODE: result0[0].code } } },
+          { $inc: { "reaction.$.COUNT": -1 } }, { new: true })
+          .then(result2 => {
+            // checking reaction is available or not ***** 
+            eventVideoModel.find({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } }).then(result3 => {
+              if (result3.length > 0) {
+                eventVideoModel.findOneAndUpdate({ _id: videoId, reaction: { $elemMatch: { NAME: NAME, CODE: CODE } } },
+                  { $inc: { "reaction.$.COUNT": 1 } }, { new: true }).then(result4 => {
+                    res.status(200).json({
+                      statusCode: 200,
+                      message: `you have reacted on a video`,
+                      result: result4
+                    })
+                  }).catch(err => {
+                    res.status(401).json({
+                      statusCode: 401,
+                      message: `something going wrong please check and error is ${err}`
+                    })
+                  })
+              } else {
+                eventVideoModel.findByIdAndUpdate(videoId, {
+                  $push: {
+                    reaction: {
+                      NAME: NAME,
+                      CODE: CODE,
+                      COUNT: 1,
+                      EMOOJI: EMOOJI
+                    }
+                  }
+                }, { new: true }).then(result5 => {
+                  res.status(200).json({
+                    statusCode: 200,
+                    message: `you have reacted on a video`,
+                    result: result5
+                  })
+
+                }).catch(err => {
+                  res.status(401).json({
+                    statusCode: 401,
+                    message: `something going wrong please check and error is ${err}`
+                  })
+                })
+              }
+            }).catch(err => {
+              res.status(401).json({
+                statusCode: 401,
+                message: `something going wrong please check and error is ${err}`
+              })
+            })
+            // *******end here******
+
+          }).catch(err => {
+            res.status(401).json({
+              statusCode: 401,
+              message: `something going wrong please check and error is ${err}`
+            })
+          })
+      }).catch(err => {
+        res.status(401).json({
+          statusCode: 401,
+          message: `something going wrong please check and error is ${err}`
+        })
+      })
+    }
+    if (result0.length > 0 && result0[0].name === NAME && result0[0].code === CODE) {
+      res.status(200).json({
+        statusCode: 200,
+        message: "this reaction is already saved..",
+      })
+    }
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and error is ${err}`
     })
-  
+  })
+
 }
 
 // *************** ALL Event List ************* 
 exports.GetEventList = async (req, res, next) => {
   const loginUserId = "652551503cbf899185e4a367"
   const Today_Date = moment().format();
-  var resultlength;
   eventModel.find({ endDate: { $gte: Today_Date }, eventStatus: true })
-    .populate("userId",`-password -otpVerification -deviceId`)
+    .populate("userId", `-password -otpVerification -deviceId`)
     .populate("participants.participantId", `-password -otpVerification -deviceId`)
     .then(result => {
-      // cheking followers details ******
-      resultlength = result.length
+      const publicEventList = result.filter(item => item.inviteTo === true || (item.userId._id === loginUserId && item.inviteTo === false));
+      var followersEventList = result.filter(item => item.inviteTo === false && item.userId._id != loginUserId);
       res.status(200).json({
         statusCode: 200,
         message: `Event details list`,
@@ -472,7 +472,7 @@ exports.GetEventList = async (req, res, next) => {
 }
 
 //***********Replace Event video by participants******** */
-exports.ReplaceEventVideo = async(req,res,next)=>{
+exports.ReplaceEventVideo = async (req, res, next) => {
   const eventId = req.body.eventId;
   const title = req.body.title;
   const description = req.body.description;
