@@ -3,7 +3,6 @@ const eventVideoModel = require("../Model/eventVideos");
 const participantsModel = require("../Model/participants");
 const reactionStatusModel = require("../Model/reactionStatus");
 const ratingModule = require("../Model/rating");
-const followersModel = require("../Model/followers")
 const moment = require("moment")
 //************** create new Event******** */
 exports.CreateEvent = async (req, res, next) => {
@@ -248,7 +247,7 @@ exports.MarkEventVideoRating = async (req, res, next) => {
 // *********All event Video list************
 exports.GetEventVideoList = async (req, res, next) => {
   const eventId = req.body.eventId;
-  eventVideoModel.find({ eventId: eventId }).sort({ avgRating: -1 })
+  eventVideoModel.find({ eventId: eventId }).populate("userId",`-password -otpVerification -deviceId`).sort({ avgRating: -1 })
     .then(result => {
       res.status(200).json({
         statusCode: 200,
