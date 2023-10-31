@@ -46,8 +46,7 @@ Router.post("/following_status",followersController.userStatus)
 Router.post("/mark_video_rating",ratingController.MarkVideoRating);
 Router.post("/video_details_by_userId_and_videoId",ratingController.GetRatedvideo)
 //****************payment Integration**** */
-const paymentController = require("../Utilities/strip")
-Router.post("/payment", paymentController.StripePayment)
+
 
 //********** Event module Routing is here********* */
 
