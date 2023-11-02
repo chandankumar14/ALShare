@@ -26,7 +26,6 @@ exports.CreateOrder = async (req, res, next) => {
             amount: amount,
             orderId: result.id
         })
-        
         //*********updating payment collection****** */
         paymentsModelPayload.save().then(result1 => {
             res.status(200).json({
@@ -48,4 +47,27 @@ exports.CreateOrder = async (req, res, next) => {
             message: `something going wrong and err is ${err}`
         })
     })
+}
+
+//***********update payments status******** */
+exports.updatePaymentStatus = async (req, res, next) => {
+    const paymentMethod = req.body.paymentMethod;
+    const transId = req.body.transId;
+    const paymentStatus = req.body.paymentStatus;
+    const userId = req.body.userId;
+    const eventId = req.body.eventId;
+    paymentsModel.findOneAndUpdate({ eventId: eventId, userId: userId },
+        { paymentMethod: paymentMethod, transId: transId, paymentStatus: paymentStatus })
+        .then(result => {
+            res.status(200).json({
+                statusCode: 200,
+                message: `Transaction details is updated successfully ..`,
+                result: result
+            })
+        }).catch(err => {
+            res.status(401).json({
+                statusCode: 401,
+                message: `something going wrong and err is ${err}`
+            })
+        })
 }

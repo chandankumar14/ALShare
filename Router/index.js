@@ -67,4 +67,5 @@ Router.post(`/replace_event_video`,eventController.ReplaceEventVideo);
 Router.post(`/delete_draft_event`,eventController.DeleteDraftEvent);
 //***********Payment Module is Here ********** */
 Router.post(`/razorpay_create_order`, paymentController.CreateOrder);
+Router.post(`/update_payment_status`,paymentController.updatePaymentStatus);
 module.exports = Router;
