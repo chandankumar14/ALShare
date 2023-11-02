@@ -1,4 +1,6 @@
 const paymentsModel = require("../Model/payment");
+const participantsModel = require("../Model/participants");
+const eventModel = require("../Model/event");
 const path = require("path")
 require("dotenv").config({ path: path.resolve(__dirname, '../.env') });
 const razorPay = require("razorpay");
@@ -48,7 +50,6 @@ exports.CreateOrder = async (req, res, next) => {
         })
     })
 }
-
 //***********update payments status******** */
 exports.updatePaymentStatus = async (req, res, next) => {
     const paymentMethod = req.body.paymentMethod;
@@ -59,10 +60,37 @@ exports.updatePaymentStatus = async (req, res, next) => {
     paymentsModel.findOneAndUpdate({ eventId: eventId, userId: userId },
         { paymentMethod: paymentMethod, transId: transId, paymentStatus: paymentStatus })
         .then(result => {
-            res.status(200).json({
-                statusCode: 200,
-                message: `Transaction details is updated successfully ..`,
-                result: result
+            //*********updating participants details ******** */
+            participantsPayLoad = new participantsModel({
+                eventId: eventId,
+                userId: userId,
+                paymentStatus: paymentStatus,
+                transId: transId
+            })
+            participantsPayLoad.save().then(result1 => {
+                eventModel.findByIdAndUpdate(eventId, {
+                    $push: {
+                        participants: {
+                            participantId: userId,
+                            videoPostStaus: false
+                        }
+                    }
+                }).then(result2 => {
+                    res.status(200).json({
+                        statusCode: 200,
+                        message: `you are successFully joined event`
+                    })
+                }).catch(err => {
+                    res.status(401).json({
+                        statusCode: 401,
+                        message: `something going wrong and err is ${err}`
+                    })
+                })
+            }).catch(err => {
+                res.status(401).json({
+                    statusCode: 401,
+                    message: `something going wrong and err is ${err}`
+                })
             })
         }).catch(err => {
             res.status(401).json({
@@ -71,3 +99,5 @@ exports.updatePaymentStatus = async (req, res, next) => {
             })
         })
 }
+
+

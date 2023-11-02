@@ -56,7 +56,6 @@ Router.post("/video_details_by_userId_and_videoId",ratingController.GetRatedvide
 Router.post(`/create_event`, eventController.CreateEvent);
 Router.get(`/All_event_list`,eventController.GetEventList);
 Router.post(`/event_details_by_id`,eventController.GetEventById);
-Router.post(`/join_event`,eventController.JoinEvent);
 Router.post(`/post_event_video`,eventController.PostEventVideos);
 Router.post(`/event_video_rating`,eventController.MarkEventVideoRating);
 Router.post(`/event_video_reaction`,eventController.EventVideoReaction);

@@ -57,47 +57,6 @@ exports.GetEventById = async (req, res, next) => {
     })
   })
 }
-//************ Join Event ********* */
-
-exports.JoinEvent = async (req, res, next) => {
-  const eventId = req.body.eventId;
-  const userId = req.body.userId;
-  const paymentStatus = req.body.paymentStatus;
-  const transId = req.body.transId;
-  participantsPayLoad = new participantsModel({
-    eventId: eventId,
-    userId: userId,
-    paymentStatus: paymentStatus,
-    transId: transId
-  })
-  participantsPayLoad.save().then(result => {
-    eventModel.findByIdAndUpdate(eventId, {
-      $push: {
-        participants: {
-          participantId: userId,
-          videoPostStaus: false
-        }
-      }
-    }).then(participants => {
-      res.status(200).json({
-        statusCode: 200,
-        message: `you have joined event SuccessFully..`,
-        result: result
-      })
-    }).catch(err => {
-      res.status(401).json({
-        statusCode: 401,
-        message: `something going wrong please check and err msg is ${err}`
-      })
-    })
-  }).catch(err => {
-    res.status(401).json({
-      statusCode: 401,
-      message: `something going wrong please check and err msg is ${err}`
-    })
-  })
-}
-
 //**************** Posting Event Video********/
 exports.PostEventVideos = async (req, res, next) => {
   const eventId = req.body.eventId;
