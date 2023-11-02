@@ -25,6 +25,10 @@ const paymentsSchema = new Schema({
         type: Boolean,
         default: false
     },
+    orderId:{
+        type:String,
+        default:"orderId"
+    }
 
 },
     { timestamps: true })

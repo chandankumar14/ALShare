@@ -14,6 +14,9 @@ const followersController = require("../Controller/follower");
 //********** Event controller ***** */
 const eventController = require("../Controller/event")
 
+//***********Payment Controller here ****** */
+const paymentController = require("../Controller/payments")
+
 // *********Vidoe Module **************
 Router.post(`/video_details`, videoController.PostVideoDetail);
 Router.post(`/video_details_list`, videoController.GetVideoDetails);
@@ -60,6 +63,8 @@ Router.post(`/event_video_reaction`,eventController.EventVideoReaction);
 Router.post(`/event_video_list`,eventController.GetEventVideoList);
 Router.post(`/draft_post_event_list`,eventController.GetPostAndDraftEvent);
 Router.post(`/post_draft_event`,eventController.PostDraftEvent);
-Router.post(`/replace_event_video`,eventController.ReplaceEventVideo)
-
+Router.post(`/replace_event_video`,eventController.ReplaceEventVideo);
+Router.post(`/delete_draft_event`,eventController.DeleteDraftEvent);
+//***********Payment Module is Here ********** */
+Router.post(`/razorpay_create_order`, paymentController.CreateOrder);
 module.exports = Router;

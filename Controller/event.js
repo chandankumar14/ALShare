@@ -515,3 +515,20 @@ exports.ReplaceEventVideo = async (req, res, next) => {
     })
   })
 }
+//************ Delete Draft event ********** */
+
+exports.DeleteDraftEvent = async (req, res, next) => {
+  const eventId = req.body.eventId;
+  eventModel.findByIdAndDelete(eventId).then(result => {
+    res.status(200).json({
+      statusCode: 200,
+      message: "your draft event is deleted successfully..",
+      result: result
+    })
+  }).catch(err => {
+    res.status(401).json({
+      statusCode: 401,
+      message: `something going wrong please check and error is ${err}`
+    })
+  })
+}
